@@ -183,6 +183,9 @@ export class Game {
         this.gameState.setState(GAME_STATES.GAME_OVER);
         clearInterval(this.gameLoop);
 
+        // Reset ability timer
+        this.abilityManager.resetAbility();
+
         // Create explosion effect
         this.particleSystem.addExplosionParticles(this.bird.x, this.bird.y);
 

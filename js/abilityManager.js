@@ -217,4 +217,22 @@ export class AbilityManager {
     isRageModeActive() {
         return this.activeAbility && this.activeAbility.type === 'rage';
     }
+
+    resetAbility() {
+        console.log('Resetting ability system'); // Debug log
+        
+        // Deactivate any active ability
+        if (this.activeAbility) {
+            this.deactivateAbility();
+        }
+        
+        // Reset cooldown timer
+        this.cooldownTimer = 0;
+        this.lastActivation = 0;
+        
+        // Hide ability timer
+        this.hideAbilityTimer();
+        
+        console.log('Ability system reset'); // Debug log
+    }
 }
