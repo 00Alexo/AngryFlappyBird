@@ -101,6 +101,12 @@ export class UIManager {
         document.getElementById('gameOver').style.display = 'none';
         document.getElementById('instructions').style.display = 'block';
         this.gameState.updateHighScoreDisplay();
+        // Always show the old coin value immediately when returning to menu
+        const menuPoints = document.getElementById('menuPoints');
+        if (menuPoints && this.gameState.getCoinsEarnedThisGame() > 0) {
+            menuPoints.textContent = this.gameState.getCoins() - this.gameState.getCoinsEarnedThisGame();
+            setTimeout(() => this.animateCoinFallToMenu(), 700);
+        }
     }
 
     hideStartScreen() {
@@ -153,6 +159,66 @@ export class UIManager {
     hideGameOverScreen() {
         document.getElementById('gameOver').style.display = 'none';
         document.getElementById('newHighScoreMsg').style.display = 'none';
+    }
+
+    /**
+     * Animate coins falling from the top of the screen to the menuPoints counter.
+     * Starts after a delay to ensure the main menu is visible.
+     */
+    animateCoinFallToMenu() {
+        const menuPoints = document.getElementById('menuPoints');
+        if (!menuPoints) return;
+
+        // Always show the old value before animation starts
+        const oldValue = this.gameState.getCoins() - this.gameState.getCoinsEarnedThisGame();
+
+        // Get where to land
+        const endRect = menuPoints.getBoundingClientRect();
+        const container = document.body;
+        const coinsToAnimate = Math.min(16, Math.max(6, Math.floor(this.gameState.getCoinsEarnedThisGame() / 2)));
+        const screenWidth = window.innerWidth;
+
+        let lastCoinDelay = 0;
+        menuPoints.textContent = oldValue; // Force old value to be shown until animation is done
+        for (let i = 0; i < coinsToAnimate; i++) {
+            const coin = document.createElement('div');
+            coin.className = 'coin-fall-anim';
+            coin.innerHTML = '<i class="fas fa-coins"></i>';
+            coin.style.position = 'fixed';
+            // Random X position across the screen
+            const startX = Math.random() * (screenWidth - 40) + 20;
+            coin.style.left = `${startX}px`;
+            coin.style.top = `-40px`;
+            coin.style.zIndex = 9999;
+            coin.style.pointerEvents = 'none';
+            coin.style.fontSize = '2em';
+            coin.style.opacity = '0.92';
+            coin.style.transition = 'transform 1.2s cubic-bezier(0.23,1,0.32,1), opacity 0.5s';
+            container.appendChild(coin);
+
+            // Animate to menuPoints
+            setTimeout(() => {
+                const endX = endRect.left + endRect.width/2 - 16;
+                const endY = endRect.top + endRect.height/2 - 16;
+                coin.style.transform = `translate(${endX - startX}px, ${endY + 40}px) scale(1.1)`;
+                coin.style.opacity = '0.2';
+            }, 80 + i * 90);
+
+            // Remove and pop menuPoints
+            const coinDelay = 1400 + i * 90;
+            if (i === coinsToAnimate - 1) lastCoinDelay = coinDelay;
+            setTimeout(() => {
+                coin.remove();
+                if (i === coinsToAnimate - 1) {
+                    menuPoints.classList.add('coin-pop-anim');
+                    setTimeout(() => menuPoints.classList.remove('coin-pop-anim'), 700);
+                }
+            }, coinDelay);
+        }
+        // Update coin counter after all coins and pop animation are done
+        setTimeout(() => {
+            menuPoints.textContent = this.gameState.getCoins();
+        }, lastCoinDelay + 700);
     }
 
     updateIcons() {

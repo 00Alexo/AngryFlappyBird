@@ -24,6 +24,9 @@
             <div id="abilityTimer" style="display: none;">
                 <i class="fas fa-magic"></i> Ability: <span id="abilityCountdown">Ready</span>
             </div>
+            <div id="abilityDuration" style="display: none;">
+                <i class="fas fa-clock"></i> <span id="abilityDurationText">RAGE MODE</span>: <span id="abilityDurationCountdown">8s</span>
+            </div>
         </div>
         <div id="startScreen">
             <!-- Background Elements -->
@@ -88,10 +91,6 @@
                         <button id="charactersBtn" class="menu-btn secondary" onclick="characterUI.showCharacterScreen()">
                             <i class="fas fa-feather"></i>
                             <span>CHOOSE YOUR BIRD</span>
-                        </button>
-                        <button id="debugCoinsBtn" class="menu-btn debug" onclick="window.addDebugCoins()">
-                            <i class="fas fa-dollar-sign"></i>
-                            <span>+10,000 COINS</span>
                         </button>
                     </div>
 

@@ -20,59 +20,6 @@ window.startGame = () => {
 };
 
 // Debug function to add coins
-window.addDebugCoins = async () => {
-    console.log('Adding 10,000 debug coins...');
-    if (gameInstance) {
-        const gameState = gameInstance.getGameState();
-        await gameState.addCoins(10000);
-        
-        // Check achievements after adding coins
-        if (achievementManager) {
-            await achievementManager.checkAchievements();
-        }
-        
-        // Show notification
-        const notification = document.createElement('div');
-        notification.className = 'debug-notification';
-        notification.innerHTML = `
-            <div class="debug-icon">💰</div>
-            <div class="debug-text">
-                <h3>Debug Coins Added!</h3>
-                <p>+10,000 Coins</p>
-                <small>Total: ${gameState.getCoins()} coins</small>
-            </div>
-        `;
-        
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: linear-gradient(135deg, #32CD32, #228B22);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
-            animation: slideInLeft 0.5s ease-out;
-            max-width: 300px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-family: 'Nunito', sans-serif;
-        `;
-        
-        document.body.appendChild(notification);
-        
-        // Remove after 3 seconds
-        setTimeout(() => {
-            notification.remove();
-        }, 3000);
-        
-        console.log('Debug coins added successfully');
-    } else {
-        console.log('Game instance not ready yet');
-    }
-};
 
 // Initialize game when page loads
 window.addEventListener('load', () => {

@@ -38,19 +38,30 @@ export class AbilityManager {
         
         const currentTime = Date.now();
         const timeSinceLastActivation = currentTime - this.lastActivation;
-        
-        console.log('Time since last activation:', timeSinceLastActivation, 'Cooldown:', this.cooldownDuration); // Debug log
-        
+
+        // Get current character
+        const character = this.game.characterUI.getCurrentCharacter();
+        console.log('Current character:', character ? character.name : 'None'); // Debug log
+        if (!character) return;
+
+        // Set cooldown duration for Red
+        if (character.id === 'red') {
+            this.cooldownDuration = 40000; // 40 seconds
+        } else {
+            this.cooldownDuration = 30000; // Default 30 seconds
+        }
+
+        // Prevent activation if ability is currently active
+        if (this.activeAbility) {
+            console.log('Ability is currently active, cannot activate again.');
+            return;
+        }
+
         // Check if ability is on cooldown
         if (timeSinceLastActivation < this.cooldownDuration) {
             console.log('Ability on cooldown, remaining:', this.cooldownDuration - timeSinceLastActivation); // Debug log
             return;
         }
-
-        const character = this.game.characterUI.getCurrentCharacter();
-        console.log('Current character:', character ? character.name : 'None'); // Debug log
-        
-        if (!character) return;
 
         // Activate character-specific ability
         switch (character.id) {
@@ -61,9 +72,7 @@ export class AbilityManager {
                 console.log(`No ability implemented for character: ${character.name}`);
                 return;
         }
-
-        this.lastActivation = currentTime;
-        this.startCooldown();
+        // Do NOT start cooldown here; will start after ability ends
     }
 
     activateRageMode() {
@@ -85,6 +94,9 @@ export class AbilityManager {
         
         // Show visual feedback
         this.showAbilityActivation('🔥 RAGE MODE ACTIVATED!');
+        
+        // Show duration countdown
+        this.showDurationDisplay('RAGE MODE');
     }
 
     update() {
@@ -92,6 +104,10 @@ export class AbilityManager {
         if (this.activeAbility) {
             const currentTime = Date.now();
             const elapsed = currentTime - this.activeAbility.startTime;
+            const remaining = this.activeAbility.duration - elapsed;
+            
+            // Update duration countdown display
+            this.updateDurationDisplay(remaining);
             
             if (elapsed >= this.activeAbility.duration || this.activeAbility.hasSmashed) {
                 this.deactivateAbility();
@@ -106,13 +122,20 @@ export class AbilityManager {
         if (!this.activeAbility) return;
 
         console.log('Deactivating ability');
-        
+
         // Remove rage mode effects
         if (this.activeAbility.type === 'rage') {
             this.game.bird.setRageMode(false);
         }
 
         this.activeAbility = null;
+
+        // Hide duration display
+        this.hideDurationDisplay();
+
+        // Start cooldown now
+        this.lastActivation = Date.now();
+        this.startCooldown();
     }
 
     onPipeHit() {
@@ -150,7 +173,11 @@ export class AbilityManager {
         if (this.game.gameState.getState() === GAME_STATES.PLAYING) {
             abilityTimer.style.display = 'block';
             
-            if (remainingCooldown > 0) {
+            // Check if ability is currently active
+            if (this.activeAbility) {
+                abilityCountdown.textContent = 'In Use';
+                console.log('Ability in use, showing "In Use"'); // Debug log
+            } else if (remainingCooldown > 0) {
                 const seconds = Math.ceil(remainingCooldown / 1000);
                 abilityCountdown.textContent = `${seconds}s`;
                 console.log('Ability on cooldown, showing timer:', seconds); // Debug log
@@ -218,6 +245,32 @@ export class AbilityManager {
         return this.activeAbility && this.activeAbility.type === 'rage';
     }
 
+    showDurationDisplay(abilityName) {
+        const durationTimer = document.getElementById('abilityDuration');
+        const durationText = document.getElementById('abilityDurationText');
+        
+        if (durationTimer && durationText) {
+            durationText.textContent = abilityName;
+            durationTimer.style.display = 'block';
+        }
+    }
+
+    updateDurationDisplay(remainingMs) {
+        const durationCountdown = document.getElementById('abilityDurationCountdown');
+        
+        if (durationCountdown && remainingMs > 0) {
+            const remainingSeconds = Math.ceil(remainingMs / 1000);
+            durationCountdown.textContent = `${remainingSeconds}s`;
+        }
+    }
+
+    hideDurationDisplay() {
+        const durationTimer = document.getElementById('abilityDuration');
+        if (durationTimer) {
+            durationTimer.style.display = 'none';
+        }
+    }
+
     resetAbility() {
         console.log('Resetting ability system'); // Debug log
         
@@ -230,8 +283,9 @@ export class AbilityManager {
         this.cooldownTimer = 0;
         this.lastActivation = 0;
         
-        // Hide ability timer
+        // Hide ability timer and duration display
         this.hideAbilityTimer();
+        this.hideDurationDisplay();
         
         console.log('Ability system reset'); // Debug log
     }

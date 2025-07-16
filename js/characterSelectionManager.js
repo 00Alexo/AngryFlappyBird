@@ -53,8 +53,18 @@ export class CharacterCarouselManager {
                 characterElement.classList.add('locked');
             }
 
-            // Add character visual (using CSS for movie-accurate styling)
-            characterElement.innerHTML = `<div class="carousel-bird-visual"></div>`;
+            // Special handling for Red's visual elements
+            let birdVisualContent = `<div class="carousel-bird-visual"></div>`;
+            if (character.id === 'red') {
+                birdVisualContent = `
+                    <div class="carousel-bird-visual">
+                        <div class="eye"></div>
+                        <div class="beak"></div>
+                    </div>
+                `;
+            }
+
+            characterElement.innerHTML = birdVisualContent;
 
             this.carouselTrack.appendChild(characterElement);
         });

@@ -25,11 +25,16 @@ export class Bird {
         // Apply rage mode speed boost
         let speedMultiplier = multipliers.speed;
         if (this.rageMode) {
-            speedMultiplier *= 1.5; // 50% speed boost during rage mode
+            speedMultiplier *= 2.0; // 100% speed boost during rage mode - much more dramatic!
         }
         
         // Update physics with character modifiers
-        this.velocity += GRAVITY * speedMultiplier;
+        let gravityMultiplier = speedMultiplier;
+        if (this.rageMode) {
+            gravityMultiplier *= 0.7; // Reduced gravity during rage mode for more dramatic effect
+        }
+        
+        this.velocity += GRAVITY * gravityMultiplier;
         this.y += this.velocity;
 
         // Update rotation and animation
@@ -38,11 +43,13 @@ export class Bird {
 
         // Update trail
         this.trail.push({ x: this.x, y: this.y, alpha: 1 });
-        if (this.trail.length > 8) this.trail.shift();
+        const maxTrailLength = this.rageMode ? 15 : 8; // Longer trail during rage mode
+        if (this.trail.length > maxTrailLength) this.trail.shift();
 
         // Update trail alpha
         this.trail.forEach((point, index) => {
-            point.alpha = index / this.trail.length * 0.3;
+            const baseAlpha = this.rageMode ? 0.6 : 0.3; // More visible trail during rage mode
+            point.alpha = index / this.trail.length * baseAlpha;
         });
     }
 
@@ -54,7 +61,7 @@ export class Bird {
         
         // Rage mode makes flapping stronger but not too much
         if (this.rageMode) {
-            flapStrength *= 1.3; // 30% stronger flap in rage mode
+            flapStrength *= 1.3; // 30% stronger flap in rage mode - more balanced
         }
         
         this.velocity = flapStrength;

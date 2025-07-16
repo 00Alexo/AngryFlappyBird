@@ -66,9 +66,18 @@ export class CharacterUI {
         const canBuy = this.characterManager.canBuyCharacter(character.id, playerCoins);
         const isSelected = character.id === selectedChar;
         
+        // Special handling for Red's visual elements
+        let avatarContent = '';
+        if (character.id === 'red') {
+            avatarContent = `
+                <div class="eye"></div>
+                <div class="beak"></div>
+            `;
+        }
+        
         card.innerHTML = `
             <div class="character-avatar ${character.id}">
-                <div class="bird-visual-${character.id}"></div>
+                ${avatarContent}
             </div>
             <div class="character-info">
                 <h3>${character.name}</h3>
@@ -199,6 +208,15 @@ export class CharacterUI {
         // Get ability info
         const abilityInfo = this.getAbilityInfo(character.id);
         
+        // Special handling for Red's visual elements in info popup
+        let avatarContent = '';
+        if (character.id === 'red') {
+            avatarContent = `
+                <div class="eye"></div>
+                <div class="beak"></div>
+            `;
+        }
+        
         // Create popup overlay
         const overlay = document.createElement('div');
         overlay.className = 'character-info-overlay';
@@ -206,7 +224,7 @@ export class CharacterUI {
             <div class="character-info-popup">
                 <div class="character-info-header">
                     <div class="character-info-avatar ${character.id}">
-                        <div class="bird-visual-${character.id}"></div>
+                        ${avatarContent}
                     </div>
                     <div class="character-info-title">
                         <h2>${character.name}</h2>
@@ -339,11 +357,23 @@ export class CharacterUI {
                 tips: ["Stay tuned for The Blues' split ability!"]
             },
             matilda: {
-                description: "Matilda's egg bomb ability - coming soon!",
-                duration: "Coming soon",
-                cooldown: "Coming soon",
-                effects: ["🥚 Not yet implemented"],
-                tips: ["Stay tuned for Matilda's egg bomb ability!"]
+                description: "Matilda's unique resurrection ability! When she dies, two pipes ahead fall down and an egg drops from the sky to respawn her. This ability can only be used once per life.",
+                duration: "One-time use per life",
+                cooldown: "Resets 1 minute after death",
+                effects: [
+                    "🥚 Egg drops from sky when Matilda dies",
+                    "🏗️ Two pipes ahead fall down",
+                    "🔄 Automatic respawn at egg location",
+                    "⏰ Ability resets 90 seconds after death",
+                    "💀 Only works when Matilda dies"
+                ],
+                tips: [
+                    "This is a passive ability - no manual activation needed",
+                    "The ability only triggers when you die",
+                    "Use it strategically - you only get one chance per life",
+                    "The falling pipes clear your path ahead",
+                    "Time your death carefully to maximize the advantage"
+                ]
             }
         };
         

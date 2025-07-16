@@ -172,6 +172,18 @@ export class MenuManager {
             // Create the bird visual based on character type
             const birdVisual = document.createElement('div');
             birdVisual.className = `bird-visual-${character.id}`;
+            
+            // Special handling for Red's visual elements
+            if (character.id === 'red') {
+                const eye = document.createElement('div');
+                eye.className = 'eye';
+                birdVisual.appendChild(eye);
+                
+                const beak = document.createElement('div');
+                beak.className = 'beak';
+                birdVisual.appendChild(beak);
+            }
+            
             birdAvatar.appendChild(birdVisual);
             
             // Reset animation
