@@ -1,0 +1,96 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: 'Fredoka One', 'Comic Sans MS', cursive;
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(135deg, #4A90E2 0%, #87CEEB 50%, #98FB98 100%);
+}
+
+/* Game Container */
+#gameContainer {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+#gameCanvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(180deg, #87CEEB 0%, #4A90E2 50%, #228B22 100%);
+}
+
+/* Game UI */
+#gameUI {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+    z-index: 10;
+}
+
+#gameUI div {
+    margin-bottom: 10px;
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 25px;
+    backdrop-filter: blur(10px);
+}
+
+/* Instructions */
+#instructions {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 18px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px 30px;
+    border-radius: 25px;
+    backdrop-filter: blur(10px);
+}
+
+/* Animated Background Elements */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+    50% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.8); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #gameUI {
+        font-size: 24px;
+        top: 20px;
+        left: 20px;
+    }
+    
+    #instructions {
+        font-size: 16px;
+        bottom: 20px;
+    }
+}
