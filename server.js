@@ -1,29 +1,32 @@
 const express = require('express');
 const path = require('path');
-
-console.log('🚀 Starting Angry Flappy Bird server...');
-
 const app = express();
-const PORT = 3000;
 
-// Serve static files from the current directory
-app.use(express.static(__dirname));
+// Serve static files with proper MIME types
+app.use(express.static(path.join(__dirname), {
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css');
+        } else if (filePath.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+        } else if (filePath.endsWith('.html')) {
+            res.setHeader('Content-Type', 'text/html');
+        }
+    }
+}));
 
-// Serve the main HTML file
+// Main route - serve index.html
 app.get('/', (req, res) => {
-    console.log('📄 Serving index.html');
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Start the server
-const server = app.listen(PORT, () => {
-    console.log(`🎮 Angry Flappy Bird server running on http://localhost:${PORT}`);
-    console.log(`📁 Serving files from: ${__dirname}`);
-    console.log(`🚀 Open your browser and go to: http://localhost:${PORT}`);
+// Catch all other routes and serve index.html (for SPA behavior)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-server.on('error', (err) => {
-    console.error('❌ Server error:', err);
+// Start server
+const PORT =  3000;
+app.listen(PORT, () => {
+    console.log(`🎮 Angry Flappy Bird server running on port ${PORT}`);
 });
-
-console.log('✅ Server setup complete!');
