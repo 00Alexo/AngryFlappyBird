@@ -3,6 +3,7 @@ import { BIRD_SIZE, FLAP_STRENGTH, GRAVITY, COLORS } from './constants.js';
 export class Bird {
     constructor(x, y, characterManager) {
         this.characterManager = characterManager;
+        this.rageMode = false;
         this.reset(x, y);
     }
 
@@ -13,6 +14,7 @@ export class Bird {
         this.rotation = 0;
         this.flapAnimation = 0;
         this.trail = [];
+        this.rageMode = false;
     }
 
     update() {
@@ -20,8 +22,14 @@ export class Bird {
         const character = this.characterManager.getCurrentCharacter();
         const multipliers = this.characterManager.getCharacterMultipliers(character.id);
         
+        // Apply rage mode speed boost
+        let speedMultiplier = multipliers.speed;
+        if (this.rageMode) {
+            speedMultiplier *= 1.5; // 50% speed boost during rage mode
+        }
+        
         // Update physics with character modifiers
-        this.velocity += GRAVITY * multipliers.speed;
+        this.velocity += GRAVITY * speedMultiplier;
         this.y += this.velocity;
 
         // Update rotation and animation
@@ -42,9 +50,25 @@ export class Bird {
         const character = this.characterManager.getCurrentCharacter();
         const multipliers = this.characterManager.getCharacterMultipliers(character.id);
         
-        this.velocity = FLAP_STRENGTH * multipliers.agility;
+        let flapStrength = FLAP_STRENGTH * multipliers.agility;
+        
+        // Rage mode makes flapping stronger but not too much
+        if (this.rageMode) {
+            flapStrength *= 1.3; // 30% stronger flap in rage mode
+        }
+        
+        this.velocity = flapStrength;
         this.rotation = -0.3;
         this.flapAnimation = 1;
+    }
+
+    setRageMode(active) {
+        this.rageMode = active;
+        console.log(`Rage mode ${active ? 'activated' : 'deactivated'}`);
+    }
+
+    isRageModeActive() {
+        return this.rageMode;
     }
 
     checkBounds(canvasHeight) {
@@ -67,6 +91,56 @@ export class Bird {
         ctx.save();
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rotation);
+
+        // Rage mode aura effect
+        if (this.rageMode) {
+            ctx.save();
+            const time = Date.now() * 0.02; // Faster animation
+            const auraRadius = BIRD_SIZE/2 + 25 + Math.sin(time) * 10; // Bigger aura
+            
+            // Dark red rage aura with more intense colors
+            const auraGradient = ctx.createRadialGradient(0, 0, BIRD_SIZE/2, 0, 0, auraRadius);
+            auraGradient.addColorStop(0, 'rgba(255, 0, 0, 0.3)');
+            auraGradient.addColorStop(0.3, 'rgba(255, 69, 0, 0.6)');
+            auraGradient.addColorStop(0.6, 'rgba(220, 20, 60, 0.8)');
+            auraGradient.addColorStop(0.8, 'rgba(139, 0, 0, 0.9)');
+            auraGradient.addColorStop(1, 'rgba(75, 0, 0, 1)');
+            
+            ctx.fillStyle = auraGradient;
+            ctx.beginPath();
+            ctx.arc(0, 0, auraRadius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // More intense rage particles
+            for (let i = 0; i < 12; i++) {
+                const angle = (time + i * 0.5) % (Math.PI * 2);
+                const distance = auraRadius * (0.7 + Math.sin(time + i) * 0.3);
+                const px = Math.cos(angle) * distance;
+                const py = Math.sin(angle) * distance;
+                
+                ctx.fillStyle = `rgba(255, ${Math.floor(Math.random() * 100)}, 0, ${0.8 + Math.random() * 0.2})`;
+                ctx.beginPath();
+                ctx.arc(px, py, 3 + Math.random() * 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Lightning-like sparks
+            for (let i = 0; i < 6; i++) {
+                const sparkAngle = (time * 2 + i * Math.PI / 3) % (Math.PI * 2);
+                const sparkDist = auraRadius * 1.2;
+                const sparkX = Math.cos(sparkAngle) * sparkDist;
+                const sparkY = Math.sin(sparkAngle) * sparkDist;
+                
+                ctx.strokeStyle = `rgba(255, 255, 0, ${0.6 + Math.random() * 0.4})`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(sparkX * 0.8, sparkY * 0.8);
+                ctx.lineTo(sparkX, sparkY);
+                ctx.stroke();
+            }
+            
+            ctx.restore();
+        }
 
         // Bird shadow
         ctx.save();

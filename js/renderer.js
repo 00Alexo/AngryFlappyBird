@@ -30,15 +30,265 @@ export class Cloud {
     }
 }
 
+export class Slingshot {
+    constructor(x, y, size, speed, swayAmount) {
+        this.x = x;
+        this.y = y;
+        this.size = size;
+        this.speed = speed;
+        this.swayAmount = swayAmount;
+        this.swayPhase = Math.random() * Math.PI * 2;
+        this.time = 0;
+        this.baseY = y;
+    }
+
+    update(canvasWidth, canvasHeight) {
+        this.x -= this.speed;
+        this.time += 0.02;
+        
+        // Add swaying motion
+        this.y = this.baseY + Math.sin(this.time + this.swayPhase) * this.swayAmount;
+        
+        if (this.x + this.size < 0) {
+            this.x = canvasWidth + Math.random() * 200;
+            this.baseY = canvasHeight - 150; // Keep on ground level
+        }
+    }
+
+    draw(ctx) {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        
+        // Draw slingshot base
+        ctx.fillStyle = '#8B4513';
+        ctx.fillRect(-this.size * 0.3, this.size * 0.5, this.size * 0.6, this.size * 0.8);
+        
+        // Draw slingshot arms
+        ctx.strokeStyle = '#654321';
+        ctx.lineWidth = this.size * 0.15;
+        ctx.lineCap = 'round';
+        
+        // Left arm
+        ctx.beginPath();
+        ctx.moveTo(-this.size * 0.1, this.size * 0.5);
+        ctx.lineTo(-this.size * 0.4, -this.size * 0.2);
+        ctx.stroke();
+        
+        // Right arm
+        ctx.beginPath();
+        ctx.moveTo(this.size * 0.1, this.size * 0.5);
+        ctx.lineTo(this.size * 0.4, -this.size * 0.2);
+        ctx.stroke();
+        
+        // Draw rubber band
+        ctx.strokeStyle = '#333333';
+        ctx.lineWidth = this.size * 0.05;
+        ctx.beginPath();
+        ctx.moveTo(-this.size * 0.4, -this.size * 0.2);
+        ctx.lineTo(this.size * 0.4, -this.size * 0.2);
+        ctx.stroke();
+        
+        ctx.restore();
+    }
+}
+
+export class Pig {
+    constructor(x, y, size, speed, bounceHeight) {
+        this.x = x;
+        this.y = y;
+        this.size = size;
+        this.speed = speed;
+        this.bounceHeight = bounceHeight;
+        this.bouncePhase = Math.random() * Math.PI * 2;
+        this.time = 0;
+        this.baseY = y;
+    }
+
+    update(canvasWidth) {
+        this.x -= this.speed;
+        this.time += 0.03;
+        
+        // Add bouncing motion
+        this.y = this.baseY + Math.sin(this.time + this.bouncePhase) * this.bounceHeight;
+        
+        if (this.x + this.size < 0) {
+            this.x = canvasWidth + Math.random() * 300;
+            this.baseY = Math.random() * 50 + 350; // Stay on ground level
+        }
+    }
+
+    draw(ctx) {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        
+        // Draw pig body
+        ctx.fillStyle = '#90EE90';
+        ctx.beginPath();
+        ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw pig ears
+        ctx.fillStyle = '#7CFC00';
+        ctx.beginPath();
+        ctx.arc(-this.size * 0.6, -this.size * 0.4, this.size * 0.3, 0, Math.PI * 2);
+        ctx.arc(this.size * 0.6, -this.size * 0.4, this.size * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw pig eyes
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.arc(-this.size * 0.3, -this.size * 0.2, this.size * 0.1, 0, Math.PI * 2);
+        ctx.arc(this.size * 0.3, -this.size * 0.2, this.size * 0.1, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw pig snout
+        ctx.fillStyle = '#32CD32';
+        ctx.beginPath();
+        ctx.arc(0, this.size * 0.2, this.size * 0.4, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw nostrils
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.arc(-this.size * 0.1, this.size * 0.2, this.size * 0.05, 0, Math.PI * 2);
+        ctx.arc(this.size * 0.1, this.size * 0.2, this.size * 0.05, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.restore();
+    }
+}
+
+export class StructuralElement {
+    constructor(x, y, type, size, speed) {
+        this.x = x;
+        this.y = y;
+        this.type = type; // 'wood', 'stone', 'ice'
+        this.size = size;
+        this.speed = speed;
+        this.rotation = 0;
+        this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+    }
+
+    update(canvasWidth) {
+        this.x -= this.speed;
+        this.rotation += this.rotationSpeed;
+        
+        if (this.x + this.size < 0) {
+            this.x = canvasWidth + Math.random() * 400;
+        }
+    }
+
+    draw(ctx) {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        
+        switch (this.type) {
+            case 'wood':
+                ctx.fillStyle = '#8B4513';
+                ctx.strokeStyle = '#654321';
+                break;
+            case 'stone':
+                ctx.fillStyle = '#696969';
+                ctx.strokeStyle = '#2F4F4F';
+                break;
+            case 'ice':
+                ctx.fillStyle = '#87CEEB';
+                ctx.strokeStyle = '#4682B4';
+                break;
+        }
+        
+        ctx.lineWidth = 2;
+        ctx.fillRect(-this.size * 0.5, -this.size * 0.1, this.size, this.size * 0.2);
+        ctx.strokeRect(-this.size * 0.5, -this.size * 0.1, this.size, this.size * 0.2);
+        
+        ctx.restore();
+    }
+}
+
+export class Bird {
+    constructor(x, y, type, size, speed, flightPattern) {
+        this.x = x;
+        this.y = y;
+        this.type = type; // 'small', 'medium', 'large'
+        this.size = size;
+        this.speed = speed;
+        this.flightPattern = flightPattern;
+        this.time = 0;
+        this.baseY = y;
+        this.wingPhase = Math.random() * Math.PI * 2;
+    }
+
+    update(canvasWidth) {
+        this.x -= this.speed;
+        this.time += 0.05;
+        
+        // Different flight patterns
+        switch (this.flightPattern) {
+            case 'wave':
+                this.y = this.baseY + Math.sin(this.time) * 30;
+                break;
+            case 'dive':
+                this.y = this.baseY + Math.sin(this.time * 2) * 50;
+                break;
+            case 'soar':
+                this.y = this.baseY + Math.sin(this.time * 0.5) * 20;
+                break;
+        }
+        
+        if (this.x + this.size < 0) {
+            this.x = canvasWidth + Math.random() * 500;
+            this.baseY = Math.random() * 150 + 50; // Stay in sky area
+        }
+    }
+
+    draw(ctx) {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        
+        // Draw bird body
+        ctx.fillStyle = this.type === 'small' ? '#FF6B6B' : this.type === 'medium' ? '#4A90E2' : '#FFD700';
+        ctx.beginPath();
+        ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw wings (animated)
+        const wingOffset = Math.sin(this.time * 8 + this.wingPhase) * 0.3;
+        ctx.fillStyle = this.type === 'small' ? '#FF4444' : this.type === 'medium' ? '#0066CC' : '#FFA500';
+        
+        // Left wing
+        ctx.beginPath();
+        ctx.ellipse(-this.size * 0.8, wingOffset, this.size * 0.6, this.size * 0.3, -0.3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Right wing
+        ctx.beginPath();
+        ctx.ellipse(this.size * 0.8, wingOffset, this.size * 0.6, this.size * 0.3, 0.3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw eye
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.arc(this.size * 0.3, -this.size * 0.2, this.size * 0.15, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.restore();
+    }
+}
+
 export class Renderer {
     constructor(canvas) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.clouds = [];
-        this.generateClouds();
+        this.slingshots = [];
+        this.structuralElements = [];
+        this.backgroundBirds = [];
+        this.generateBackgroundElements();
     }
 
-    generateClouds() {
+    generateBackgroundElements() {
+        // Generate clouds
         this.clouds = [];
         for (let i = 0; i < 8; i++) {
             this.clouds.push(new Cloud(
@@ -49,16 +299,59 @@ export class Renderer {
                 Math.random() * 0.3 + 0.1
             ));
         }
+
+        // Generate slingshots
+        this.slingshots = [];
+        for (let i = 0; i < 3; i++) {
+            this.slingshots.push(new Slingshot(
+                Math.random() * this.canvas.width + i * 300,
+                this.canvas.height - 150, // Fixed position on ground
+                Math.random() * 30 + 40,
+                Math.random() * 0.3 + 0.1,
+                Math.random() * 5 + 3 // Reduced sway for ground placement
+            ));
+        }
+
+        // Generate structural elements
+        this.structuralElements = [];
+        const types = ['wood', 'stone', 'ice'];
+        for (let i = 0; i < 5; i++) {
+            this.structuralElements.push(new StructuralElement(
+                Math.random() * this.canvas.width + i * 200,
+                Math.random() * 150 + 250,
+                types[Math.floor(Math.random() * types.length)],
+                Math.random() * 30 + 20,
+                Math.random() * 0.3 + 0.1
+            ));
+        }
+
+        // Generate background birds
+        this.backgroundBirds = [];
+        const flightPatterns = ['wave', 'dive', 'soar'];
+        const birdTypes = ['small', 'medium', 'large'];
+        for (let i = 0; i < 6; i++) {
+            this.backgroundBirds.push(new Bird(
+                Math.random() * this.canvas.width + i * 200,
+                Math.random() * 150 + 50,
+                birdTypes[Math.floor(Math.random() * birdTypes.length)],
+                Math.random() * 8 + 8,
+                Math.random() * 0.8 + 0.4,
+                flightPatterns[Math.floor(Math.random() * flightPatterns.length)]
+            ));
+        }
     }
 
     resizeCanvas(width, height) {
         this.canvas.width = width;
         this.canvas.height = height;
-        this.generateClouds();
+        this.generateBackgroundElements();
     }
 
-    updateClouds() {
+    updateBackgroundElements() {
         this.clouds.forEach(cloud => cloud.update(this.canvas.width));
+        this.slingshots.forEach(slingshot => slingshot.update(this.canvas.width, this.canvas.height));
+        this.structuralElements.forEach(element => element.update(this.canvas.width));
+        this.backgroundBirds.forEach(bird => bird.update(this.canvas.width));
     }
 
     renderBackground() {
@@ -74,8 +367,14 @@ export class Renderer {
         this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
+        // Draw background birds (behind clouds)
+        this.backgroundBirds.forEach(bird => bird.draw(this.ctx));
+
         // Draw clouds
         this.clouds.forEach(cloud => cloud.draw(this.ctx));
+
+        // Draw structural elements
+        this.structuralElements.forEach(element => element.draw(this.ctx));
 
         // Draw ground
         const groundHeight = 80;
@@ -89,9 +388,16 @@ export class Renderer {
         // Draw grass on ground
         this.ctx.fillStyle = COLORS.BACKGROUND.GRASS;
         this.ctx.fillRect(0, this.canvas.height - groundHeight, this.canvas.width, 20);
+
+        // Draw slingshots (on ground)
+        this.slingshots.forEach(slingshot => slingshot.draw(this.ctx));
     }
 
     render(bird, pipeManager, particleSystem) {
+        // Update all background elements
+        this.updateBackgroundElements();
+        
+        // Render background with all elements
         this.renderBackground();
         
         // Draw pipes

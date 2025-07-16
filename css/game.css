@@ -49,6 +49,24 @@ body {
     backdrop-filter: blur(10px);
 }
 
+/* Ability Timer */
+#abilityTimer {
+    background: rgba(139, 0, 0, 0.4) !important;
+    border: 2px solid rgba(255, 0, 0, 0.6);
+    animation: abilityTimerGlow 2s ease-in-out infinite;
+}
+
+@keyframes abilityTimerGlow {
+    0%, 100% {
+        border-color: rgba(255, 0, 0, 0.6);
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+    }
+    50% {
+        border-color: rgba(255, 0, 0, 0.9);
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+    }
+}
+
 /* Instructions */
 #instructions {
     position: absolute;

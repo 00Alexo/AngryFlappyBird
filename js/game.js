@@ -6,6 +6,7 @@ import { ParticleSystem } from './particles.js';
 import { Renderer } from './renderer.js';
 import { UIManager } from './uiManager.js';
 import { CharacterUI } from './characterUI.js';
+import { AbilityManager } from './abilityManager.js';
 
 export class Game {
     constructor() {
@@ -17,6 +18,7 @@ export class Game {
         this.particleSystem = new ParticleSystem();
         this.renderer = new Renderer(this.canvas);
         this.uiManager = new UIManager(this.gameState);
+        this.abilityManager = new AbilityManager(this);
         
         this.gameLoop = null;
         this.backgroundLoop = null;
@@ -56,6 +58,7 @@ export class Game {
         this.gameState.setState(GAME_STATES.START);
         this.uiManager.showStartScreen();
         this.uiManager.updateIcons();
+        this.abilityManager.hideAbilityTimer();
     }
 
     startGame() {
@@ -69,6 +72,9 @@ export class Game {
         this.uiManager.hideStartScreen();
         this.stopBackgroundAnimation();
         
+        // Show ability timer when game starts
+        this.abilityManager.updateCooldownDisplay();
+        
         // Start game loop
         if (this.gameLoop) clearInterval(this.gameLoop);
         this.gameLoop = setInterval(() => this.update(), 1000 / 60);
@@ -76,7 +82,7 @@ export class Game {
 
     restartGame() {
         this.uiManager.hideGameOverScreen();
-        this.renderer.generateClouds();
+        this.renderer.generateBackgroundElements();
         this.startGame();
     }
 
@@ -85,7 +91,8 @@ export class Game {
         this.particleSystem.clear();
         this.pipeManager.reset();
         this.bird.reset(this.canvas.width * 0.2, this.canvas.height / 2);
-        this.renderer.generateClouds();
+        this.renderer.generateBackgroundElements();
+        this.abilityManager.hideAbilityTimer();
         this.showStartScreen();
         this.startBackgroundAnimation();
     }
@@ -104,7 +111,7 @@ export class Game {
         if (this.backgroundLoop) clearInterval(this.backgroundLoop);
         this.backgroundLoop = setInterval(() => {
             if (this.gameState.getState() === GAME_STATES.START) {
-                this.renderer.updateClouds();
+                this.renderer.updateBackgroundElements();
                 this.renderer.renderBackground();
             }
         }, 1000 / 60);
@@ -120,6 +127,9 @@ export class Game {
     update() {
         if (this.gameState.getState() !== GAME_STATES.PLAYING) return;
 
+        // Update ability manager
+        this.abilityManager.update();
+
         // Update bird
         this.bird.update();
 
@@ -129,9 +139,6 @@ export class Game {
             return;
         }
 
-        // Update clouds
-        this.renderer.updateClouds();
-
         // Update particles
         this.particleSystem.update();
 
@@ -139,22 +146,27 @@ export class Game {
         this.pipeManager.update(this.bird);
 
         // Check pipe collisions
-        if (this.pipeManager.checkCollisions(this.bird)) {
-            this.gameOver();
-            return;
+        if (this.abilityManager.isRageModeActive()) {
+            // During rage mode, smash through pipes
+            if (this.pipeManager.checkAndSmashCollisions(this.bird)) {
+                console.log('Pipe smashed by rage mode!');
+                // Add smash effect
+                this.particleSystem.addExplosionParticles(this.bird.x, this.bird.y);
+                // Trigger ability end on pipe hit
+                this.abilityManager.onPipeHit();
+            }
+        } else {
+            // Normal collision detection
+            if (this.pipeManager.checkCollisions(this.bird)) {
+                this.gameOver();
+                return;
+            }
         }
 
         // Check scoring
         if (this.pipeManager.checkScoring(this.bird)) {
-            // Get character multiplier for scoring
-            const character = this.characterUI.getCurrentCharacter();
-            const multipliers = this.characterUI.getCharacterManager().getCharacterMultipliers(character.id);
-            const scoreIncrease = Math.floor(multipliers.power);
-            
-            // Add score based on character power
-            for (let i = 0; i < scoreIncrease; i++) {
-                this.gameState.incrementScore();
-            }
+            // Simple scoring - increment by 1 for all characters
+            this.gameState.incrementScore();
             
             // Add score particles
             const scorePos = this.pipeManager.getScoreParticlePosition();
@@ -167,7 +179,7 @@ export class Game {
         this.renderer.render(this.bird, this.pipeManager, this.particleSystem);
     }
 
-    gameOver() {
+    async gameOver() {
         this.gameState.setState(GAME_STATES.GAME_OVER);
         clearInterval(this.gameLoop);
 
@@ -185,7 +197,17 @@ export class Game {
         }, 1000 / 60);
 
         // Check for new high score
-        const isNewHighScore = this.gameState.checkAndUpdateHighScore();
+        const isNewHighScore = await this.gameState.checkAndUpdateHighScore();
+        console.log(`Game Over - Score: ${this.gameState.getScore()}, High Score: ${this.gameState.getHighScore()}, New High Score: ${isNewHighScore}`);
+
+        // Dispatch game over event for achievement checking
+        document.dispatchEvent(new CustomEvent('gameOver', {
+            detail: {
+                score: this.gameState.getScore(),
+                highScore: this.gameState.getHighScore(),
+                isNewHighScore: isNewHighScore
+            }
+        }));
 
         // Show game over screen after a delay
         setTimeout(() => {

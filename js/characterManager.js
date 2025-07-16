@@ -200,9 +200,9 @@ export class CharacterManager {
         if (!character) return { speed: 1, power: 1, agility: 1 };
         
         return {
-            speed: character.stats.speed / 5, // Base speed multiplier
-            power: character.stats.power / 8, // Score multiplier
-            agility: character.stats.agility / 6 // Jump height multiplier
+            speed: character.stats.speed / 5, // More balanced speed differences
+            power: character.stats.power / 6, // More balanced power differences
+            agility: character.stats.agility / 5 // More balanced agility differences
         };
     }
 }

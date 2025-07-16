@@ -403,6 +403,19 @@ export class PipeManager {
         return this.pipes.some(pipe => pipe.checkCollision(bird));
     }
 
+    // New method to handle pipe smashing during rage mode
+    checkAndSmashCollisions(bird) {
+        const collidingPipeIndex = this.pipes.findIndex(pipe => pipe.checkCollision(bird));
+        
+        if (collidingPipeIndex !== -1) {
+            // Remove the colliding pipe (smash it)
+            this.pipes.splice(collidingPipeIndex, 1);
+            return true; // Collision occurred, but pipe was smashed
+        }
+        
+        return false; // No collision
+    }
+
     checkScoring(bird) {
         return this.pipes.some(pipe => pipe.checkScored(bird));
     }

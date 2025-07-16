@@ -110,6 +110,7 @@ export class UIManager {
 
     showGameOverScreen(isNewHighScore) {
         console.log('Showing game over screen'); // Debug log
+        console.log('isNewHighScore parameter:', isNewHighScore); // Debug log
         
         const gameOverScreen = document.getElementById('gameOver');
         const startScreen = document.getElementById('startScreen');
@@ -132,8 +133,10 @@ export class UIManager {
         const newHighScoreMsg = document.getElementById('newHighScoreMsg');
         if (newHighScoreMsg) {
             if (isNewHighScore) {
+                console.log('Showing new high score message');
                 newHighScoreMsg.style.display = 'block';
             } else {
+                console.log('Hiding new high score message');
                 newHighScoreMsg.style.display = 'none';
             }
         }
