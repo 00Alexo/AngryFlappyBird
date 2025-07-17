@@ -283,7 +283,7 @@ export class CharacterUI {
                                 <div class="ability-stat">
                                     <i class="fas fa-keyboard"></i>
                                     <span class="ability-label">Activation:</span>
-                                    <span class="ability-value">Press E during gameplay</span>
+                                    <span class="ability-value">${abilityInfo.activation}</span>
                                 </div>
                             </div>
                             <div class="ability-effects">
@@ -320,7 +320,8 @@ export class CharacterUI {
             red: {
                 description: "Red enters an unstoppable rage mode, surrounded by a fierce dark red aura with lightning sparks. His anger fuels incredible power and speed!",
                 duration: "8 seconds",
-                cooldown: "30 seconds",
+                cooldown: "40 seconds",
+                activation: "Press E during gameplay",
                 effects: [
                     "🔥 150% increased falling speed",
                     "⚡ 100% stronger flap power",
@@ -339,6 +340,7 @@ export class CharacterUI {
                 description: "Chuck's lightning-fast speed ability - coming soon!",
                 duration: "Coming soon",
                 cooldown: "Coming soon",
+                activation: "Coming soon",
                 effects: ["⚡ Not yet implemented"],
                 tips: ["Stay tuned for Chuck's speed ability!"]
             },
@@ -346,6 +348,7 @@ export class CharacterUI {
                 description: "Bomb's explosive ability - coming soon!",
                 duration: "Coming soon", 
                 cooldown: "Coming soon",
+                activation: "Coming soon",
                 effects: ["💥 Not yet implemented"],
                 tips: ["Stay tuned for Bomb's explosive ability!"]
             },
@@ -353,6 +356,7 @@ export class CharacterUI {
                 description: "The Blues' triple split ability - coming soon!",
                 duration: "Coming soon",
                 cooldown: "Coming soon", 
+                activation: "Coming soon",
                 effects: ["🔵 Not yet implemented"],
                 tips: ["Stay tuned for The Blues' split ability!"]
             },
@@ -360,6 +364,7 @@ export class CharacterUI {
                 description: "Matilda's unique resurrection ability! When she dies, two pipes ahead fall down and an egg drops from the sky to respawn her. This ability can only be used once per life.",
                 duration: "One-time use per life",
                 cooldown: "Resets 1 minute after death",
+                activation: "Activated automatically on death",
                 effects: [
                     "🥚 Egg drops from sky when Matilda dies",
                     "🏗️ Two pipes ahead fall down",
@@ -381,6 +386,7 @@ export class CharacterUI {
             description: "Special ability coming soon!",
             duration: "TBD",
             cooldown: "TBD",
+            activation: "TBD",
             effects: ["Not yet implemented"],
             tips: ["Stay tuned for updates!"]
         };
