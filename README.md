@@ -1,6 +1,8 @@
 # Angry Flappy Bird
 
-A modern, modular Flappy Bird game with an Angry Birds theme, featuring beautiful graphics, smooth animations, and professional UI design.
+Missed Flappy Bird?
+Play alongside the iconic Angry Birds, each with their own unique abilities!
+Unlock achievements, collect coins, and purchase new characters just by playing.
 
 ## Features
 

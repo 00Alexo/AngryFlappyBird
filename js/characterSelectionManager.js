@@ -52,22 +52,12 @@ export class CharacterCarouselManager {
             if (!character.owned) {
                 characterElement.classList.add('locked');
             }
-
-            // Special handling for Red and Stella's visual elements in carousel
             let birdVisualContent = `<div class="carousel-bird-visual"></div>`;
             if (character.id === 'red') {
                 birdVisualContent = `
                     <div class="carousel-bird-visual">
                         <div class="eye"></div>
                         <div class="beak"></div>
-                    </div>
-                `;
-            } else if (character.id === 'stella') {
-                birdVisualContent = `
-                    <div class="carousel-bird-visual">
-                        <div class="bubble"></div>
-                        <div class="eye stella-eye"></div>
-                        <div class="beak stella-beak"></div>
                     </div>
                 `;
             }
