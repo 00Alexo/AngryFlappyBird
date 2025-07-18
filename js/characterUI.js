@@ -43,7 +43,10 @@ export class CharacterUI {
         const grid = document.getElementById('characterGrid');
         if (!grid) return;
         
-        const characters = this.characterManager.getAllCharacters();
+        let characters = this.characterManager.getAllCharacters();
+        // Move Stella to the end of the array
+        characters = characters.filter(c => c.id !== 'stella').concat(characters.filter(c => c.id === 'stella'));
+        
         const currentCoins = this.gameState.getCoins();
         const selectedChar = this.characterManager.selectedCharacter;
         
@@ -66,12 +69,18 @@ export class CharacterUI {
         const canBuy = this.characterManager.canBuyCharacter(character.id, playerCoins);
         const isSelected = character.id === selectedChar;
         
-        // Special handling for Red's visual elements
+        // Special handling for Red and Stella's visual elements
         let avatarContent = '';
         if (character.id === 'red') {
             avatarContent = `
                 <div class="eye"></div>
                 <div class="beak"></div>
+            `;
+        } else if (character.id === 'stella') {
+            avatarContent = `
+                <div class="bubble"></div>
+                <div class="eye stella-eye"></div>
+                <div class="beak stella-beak"></div>
             `;
         }
         

@@ -1,3 +1,46 @@
+/* Stella Avatar Styles */
+.character-avatar.stella {
+    background: linear-gradient(135deg, #FFB6C1, #FF69B4);
+    position: relative;
+    box-shadow: 0 0 0 8px rgba(255,182,193,0.2), 0 8px 25px rgba(255, 105, 180, 0.3);
+}
+
+.character-avatar.stella .bubble {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, #FFD1DC 60%, #FFB6C1 100%);
+    border-radius: 50%;
+    opacity: 0.7;
+    box-shadow: 0 0 20px 8px #FFD1DC;
+    z-index: 1;
+}
+
+.character-avatar.stella .stella-eye {
+    position: absolute;
+    top: 40px;
+    left: 38px;
+    width: 12px;
+    height: 12px;
+    background: white;
+    border-radius: 50%;
+    border: 2px solid #C71585;
+    z-index: 2;
+}
+
+.character-avatar.stella .stella-beak {
+    position: absolute;
+    top: 60px;
+    left: 44px;
+    width: 14px;
+    height: 10px;
+    background: #FFD700;
+    border-radius: 50% 50% 60% 60% / 60% 60% 40% 40%;
+    border: 2px solid #C71585;
+    z-index: 2;
+}
 /* Character Selection Screen - Angry Birds Theme */
 #characterScreen {
     position: absolute;

@@ -2,6 +2,26 @@
 export class CharacterManager {
     constructor() {
         this.characters = {
+            stella: {
+                id: 'stella',
+                name: 'Stella',
+                description: 'The pink bird with bubble shield powers',
+                price: 180,
+                owned: false,
+                stats: {
+                    speed: 7,
+                    power: 5,
+                    agility: 9,
+                    special: 'Bubble Shield'
+                },
+                colors: {
+                    body: '#FFB6C1',
+                    secondary: '#FF69B4',
+                    accent: '#FFD1DC',
+                    beak: '#FFD700',
+                    eyebrow: '#C71585'
+                }
+            },
             red: {
                 id: 'red',
                 name: 'Red',
