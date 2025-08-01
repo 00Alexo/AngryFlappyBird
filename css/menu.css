@@ -788,6 +788,64 @@
     border-bottom: 18px solid #8B4513;
 }
 
+.carousel-bird-stella {
+    background: radial-gradient(circle at 30% 30%, #FFB6C1, #FF69B4);
+    position: relative;
+}
+
+.carousel-bird-stella::before {
+    /* Pink bubble */
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    background: radial-gradient(circle, #FFD1DC 60%, #FFB6C1 100%);
+    border-radius: 50%;
+    opacity: 0.8;
+    box-shadow: 0 0 15px 5px rgba(255, 209, 220, 0.6);
+}
+
+.carousel-bird-stella::after {
+    /* Eyes */
+    content: '';
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    width: 8px;
+    height: 8px;
+    background: #333;
+    border-radius: 50%;
+    box-shadow: 14px 0 0 #333;
+}
+
+.carousel-bird-stella .bubble {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, #FFD1DC 60%, #FFB6C1 100%);
+    border-radius: 50%;
+    opacity: 0.7;
+    box-shadow: 0 0 15px 5px rgba(255, 209, 220, 0.5);
+    z-index: 1;
+}
+
+.carousel-bird-stella .stella-eye {
+    position: absolute;
+    top: 35px;
+    left: 35px;
+    width: 10px;
+    height: 10px;
+    background: white;
+    border-radius: 50%;
+    border: 2px solid #333;
+    z-index: 2;
+    box-shadow: 15px 0 0 white, 15px 0 0 2px #333;
+}
+
 /* Character Gallery Section - Removed (replaced with character selection panel) */
 
 /* Score Display */

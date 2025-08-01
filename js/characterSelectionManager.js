@@ -60,6 +60,13 @@ export class CharacterCarouselManager {
                         <div class="beak"></div>
                     </div>
                 `;
+            } else if (character.id === 'stella') {
+                birdVisualContent = `
+                    <div class="carousel-bird-visual">
+                        <div class="bubble"></div>
+                        <div class="stella-eye"></div>
+                    </div>
+                `;
             }
 
             characterElement.innerHTML = birdVisualContent;
