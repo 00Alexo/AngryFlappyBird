@@ -224,9 +224,21 @@ export class CharacterUI {
         // Get ability info
         const abilityInfo = this.getAbilityInfo(character.id);
         
-        // Special handling for Red's visual elements in info popup
+        // Add visual elements for all characters in info popup
         let avatarContent = '';
-        if (character.id === 'red') {
+        if (character.id === 'stella') {
+            avatarContent = `
+                <div class="bubble"></div>
+                <div class="eye"></div>
+                <div class="beak"></div>
+            `;
+        } else if (character.id === 'blues') {
+            avatarContent = `
+                <div class="blues-eyes"></div>
+                <div class="blues-beaks"></div>
+            `;
+        } else {
+            // All other characters get standard eyes and beak
             avatarContent = `
                 <div class="eye"></div>
                 <div class="beak"></div>
@@ -239,7 +251,7 @@ export class CharacterUI {
         overlay.innerHTML = `
             <div class="character-info-popup">
                 <div class="character-info-header">
-                    <div class="character-info-avatar ${character.id}">
+                    <div class="character-avatar ${character.id}">
                         ${avatarContent}
                     </div>
                     <div class="character-info-title">
@@ -396,6 +408,28 @@ export class CharacterUI {
                     "With all 3 birds alive you get triple points per pipe passage!",
                     "Use your extra lives strategically to power through difficult sections!",
                     "The more birds alive, the higher your score multiplier!"
+                ]
+            },
+            stella: {
+                description: "Stella creates a shimmering pink gravity bubble that drastically reduces gravity and shrinks her hitbox. She becomes super agile and floaty, with the ability to stick to pipe walls temporarily for precise maneuvering! BONUS: Includes one extra life during the bubble that destroys pipes!",
+                duration: "6 seconds",
+                cooldown: "35 seconds", 
+                activation: "Press E during gameplay",
+                effects: [
+                    "🫧 60% reduced gravity - descends very slowly",
+                    "💫 15% smaller hitbox - more forgiving collision detection",
+                    "💖 ONE EXTRA LIFE during bubble (destroys one pipe when hit!)",
+                    "✨ Beautiful animated pink bubble with sparkle trail",
+                    "🌬️ Enhanced aerial control and maneuverability",
+                    "🧲 Brief wall sticking ability for precise positioning"
+                ],
+                tips: [
+                    "Perfect for navigating tight pipe sections with precision",
+                    "The extra life destroys the pipe you hit - no position reset needed!",
+                    "Use wall sticking sparingly - it's brief but can save you in tough spots",
+                    "The reduced gravity makes timing more forgiving",
+                    "Smaller hitbox means you can squeeze through tighter gaps",
+                    "Watch for the pulsing heart icon - it shows your extra life is available!"
                 ]
             },
             matilda: {

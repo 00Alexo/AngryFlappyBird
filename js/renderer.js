@@ -420,6 +420,8 @@ export class Renderer {
         // Draw egg bomb if active (Matilda's ability)
         if (abilityManager) {
             abilityManager.renderEggBomb(this.ctx);
+            // Draw gravity bubble if active (Stella's ability)
+            abilityManager.renderGravityBubble(this.ctx);
         }
     }
     

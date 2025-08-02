@@ -117,6 +117,17 @@ export class AbilityManager {
         this.bluesLastSpawn = 0; // When the last bird was spawned
         this.bluesGameStartTime = 0; // When the game started (for spawn timing)
         
+        // Stella's Gravity Bubble ability state
+        this.stellaGravityBubbleDuration = 6000; // 6 seconds
+        this.stellaGravityBubbleCooldown = 35000; // 35 seconds
+        this.stellaGravityReduction = 0.4; // 60% reduced gravity (was 70%)
+        this.stellaHitboxShrink = 0.85; // 15% smaller hitbox (was 20%)
+        this.stellaWallStickDuration = 1000; // 1 second max wall stick (reduced from 1.5s)
+        this.stellaWallStickStartTime = 0; // When wall sticking started
+        this.stellaIsStuckToWall = false; // Whether currently stuck to wall
+        this.stellaStuckWallX = 0; // X position of wall being stuck to
+        this.stellaBubbleTrail = []; // Trail of sparkle positions for visual effect
+        
         this.setupEventListeners();
         console.log('AbilityManager initialized'); // Debug log
     }
@@ -157,6 +168,8 @@ export class AbilityManager {
             this.cooldownDuration = 40000; // 40 seconds
         } else if (character.id === 'bomb') {
             this.cooldownDuration = this.bombCooldownDuration; // 60 seconds
+        } else if (character.id === 'stella') {
+            this.cooldownDuration = this.stellaGravityBubbleCooldown; // 35 seconds
         } else {
             this.cooldownDuration = 30000; // Default 30 seconds
         }
@@ -180,6 +193,9 @@ export class AbilityManager {
                 break;
             case 'bomb':
                 this.activateBombExplosion();
+                break;
+            case 'stella':
+                this.activateGravityBubble();
                 break;
             case 'blues':
                 // Blues' ability is passive - no manual activation needed
@@ -242,6 +258,39 @@ export class AbilityManager {
         this.showDurationDisplay('BOMB FUSE');
     }
 
+    activateGravityBubble() {
+        console.log('🫧 Activating Stella\'s Gravity Bubble!');
+        
+        // Create gravity bubble ability
+        this.activeAbility = {
+            type: 'gravityBubble',
+            startTime: Date.now(),
+            duration: this.stellaGravityBubbleDuration, // 6 seconds
+            originalGravity: this.game.bird.gravity,
+            originalHitboxSize: this.game.bird.hitboxRadius || this.game.bird.size,
+            canStickToWalls: true,
+            bubbleAlpha: 0.8, // For visual effect
+            hasExtraLife: true, // Stella gets one extra life during bubble
+            lifeUsed: false // Track if the extra life has been used
+        };
+        
+        console.log('🔍 Gravity bubble initialized with extra life:', this.activeAbility);
+
+        // Apply gravity bubble effects
+        this.game.bird.setGravityBubble(true, this.stellaGravityReduction, this.stellaHitboxShrink);
+        
+        // Reset wall sticking state
+        this.stellaIsStuckToWall = false;
+        this.stellaWallStickStartTime = 0;
+        this.stellaBubbleTrail = [];
+        
+        // Show visual feedback
+        this.showAbilityActivation('🫧 GRAVITY BUBBLE ACTIVATED! (+1 LIFE)');
+        
+        // Show duration countdown
+        this.showDurationDisplay('GRAVITY BUBBLE');
+    }
+
     update() {
         // Update active ability
         if (this.activeAbility) {
@@ -257,6 +306,11 @@ export class AbilityManager {
                 this.triggerBombExplosion();
                 this.activeAbility.exploded = true;
                 // Don't deactivate yet - let explosion effects play out
+            }
+            
+            // Handle Stella's gravity bubble special mechanics
+            if (this.activeAbility.type === 'gravityBubble') {
+                this.updateGravityBubble(currentTime);
             }
             
             // Deactivate ability after duration or after smashing (rage mode only)
@@ -314,6 +368,14 @@ export class AbilityManager {
         if (this.activeAbility.type === 'bomb') {
             this.game.bird.setBombFuse(false);
         }
+        
+        // Remove gravity bubble effects
+        if (this.activeAbility.type === 'gravityBubble') {
+            this.game.bird.setGravityBubble(false);
+            this.stellaIsStuckToWall = false;
+            this.stellaWallStickStartTime = 0;
+            this.stellaBubbleTrail = [];
+        }
 
         this.activeAbility = null;
 
@@ -323,6 +385,109 @@ export class AbilityManager {
         // Start cooldown now
         this.lastActivation = Date.now();
         this.startCooldown();
+    }
+
+    updateGravityBubble(currentTime) {
+        // Update bubble trail for visual effect
+        this.stellaBubbleTrail.push({
+            x: this.game.bird.x,
+            y: this.game.bird.y,
+            timestamp: currentTime,
+            size: Math.random() * 3 + 2 // Random sparkle size
+        });
+        
+        // Remove old trail points (keep only last 8 points - fewer for subtlety)
+        if (this.stellaBubbleTrail.length > 8) {
+            this.stellaBubbleTrail.shift();
+        }
+        
+        // Handle wall sticking mechanics
+        if (this.stellaIsStuckToWall) {
+            const stickDuration = currentTime - this.stellaWallStickStartTime;
+            
+            // Much easier to escape - any movement or time limit
+            if (stickDuration >= this.stellaWallStickDuration || 
+                Math.abs(this.game.bird.velocity.y) > 1 || // Any upward movement
+                Math.abs(this.game.bird.x - this.stellaStuckWallX) > 30) { // Moved away
+                this.unstickFromWall();
+            } else {
+                // Keep bird near wall but allow some movement
+                const targetX = this.stellaStuckWallX + (this.stellaStuckWallX < this.game.bird.x ? 25 : -25);
+                this.game.bird.x = targetX;
+                this.game.bird.velocity.x = 0;
+                // Allow some gravity while stuck (don't completely freeze)
+                if (this.game.bird.velocity.y > 1) {
+                    this.game.bird.velocity.y *= 0.3; // Slow fall while stuck
+                }
+            }
+        } else {
+            // Only check for wall sticking occasionally to avoid too much sticking
+            if (Math.random() < 0.1) { // Only 10% chance per frame to check
+                this.checkWallSticking();
+            }
+        }
+    }
+
+    checkWallSticking() {
+        // Check collision with pipes for wall sticking
+        if (!this.game.pipeManager || !this.game.pipeManager.pipes) return;
+        
+        const birdX = this.game.bird.x;
+        const birdY = this.game.bird.y;
+        const birdSize = this.game.bird.hitboxRadius || this.game.bird.size || 20;
+        
+        // Only check for wall sticking if bird is moving towards a wall (not flying away)
+        const birdVelocityX = this.game.bird.velocity.x || 0;
+        
+        for (const pipe of this.game.pipeManager.pipes) {
+            // Check if bird is near a pipe wall
+            const pipeLeft = pipe.x;
+            const pipeRight = pipe.x + PIPE_WIDTH;
+            
+            // Check if bird is horizontally aligned with pipe
+            if (birdX + birdSize > pipeLeft && birdX - birdSize < pipeRight) {
+                // Check if bird is in the gap (can stick to pipe walls)
+                if (birdY > pipe.topHeight + 20 && birdY < pipe.bottomY - 20) { // Added buffer zones
+                    // Determine which wall is closer
+                    const distanceToLeft = Math.abs(birdX - pipeLeft);
+                    const distanceToRight = Math.abs(birdX - pipeRight);
+                    
+                    // Much stricter conditions - only stick if very close and moving slowly
+                    const minStickDistance = 15; // Reduced from 30 to 15
+                    const maxStickVelocity = 2; // Only stick if moving slowly
+                    
+                    if ((distanceToLeft < minStickDistance || distanceToRight < minStickDistance) && 
+                        Math.abs(this.game.bird.velocity.y) < maxStickVelocity) {
+                        this.stickToWall(distanceToLeft < distanceToRight ? pipeLeft : pipeRight);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    stickToWall(wallX) {
+        console.log('🧲 Stella lightly stuck to wall!');
+        this.stellaIsStuckToWall = true;
+        this.stellaWallStickStartTime = Date.now();
+        this.stellaStuckWallX = wallX;
+        
+        // Don't force position, just reduce movement
+        this.game.bird.velocity.x *= 0.1; // Slow horizontal movement
+        this.game.bird.velocity.y *= 0.5; // Slow vertical movement
+        
+        // Show more subtle feedback
+        this.showAbilityActivation('🧲 Wall Assist!');
+    }
+
+    unstickFromWall() {
+        console.log('🚀 Stella released from wall!');
+        this.stellaIsStuckToWall = false;
+        this.stellaWallStickStartTime = 0;
+        this.stellaStuckWallX = 0;
+        
+        // Give a small gentle push away from wall
+        this.game.bird.velocity.y = Math.min(this.game.bird.velocity.y, -1); // Small upward push
     }
 
     triggerBombExplosion() {
@@ -430,6 +595,8 @@ export class AbilityManager {
     }
 
     onPipeHit() {
+        console.log('🔍 onPipeHit called, activeAbility:', this.activeAbility);
+        
         if (this.activeAbility && this.activeAbility.type === 'rage' && this.activeAbility.canSmashPipes) {
             console.log('Pipe smashed during rage mode!');
             this.activeAbility.hasSmashed = true;
@@ -441,6 +608,30 @@ export class AbilityManager {
             this.showAbilityActivation('💣 FUSE EXTINGUISHED! ABILITY WASTED!');
             this.deactivateAbility(); // Waste the ability
             return false; // Normal collision (bomb dies)
+        }
+        
+        if (this.activeAbility && this.activeAbility.type === 'gravityBubble') {
+            console.log('🫧 Gravity bubble collision detected!');
+            console.log('  - stuckToWall:', this.stellaIsStuckToWall);
+            console.log('  - hasExtraLife:', this.activeAbility.hasExtraLife);
+            console.log('  - lifeUsed:', this.activeAbility.lifeUsed);
+            
+            if (this.stellaIsStuckToWall) {
+                console.log('🫧 Stella hit pipe while stuck to wall - bubble popped!');
+                this.showAbilityActivation('💥 BUBBLE POPPED! WALL STICK FAILED!');
+                this.deactivateAbility(); // End the ability
+                return false; // Normal collision (Stella dies)
+            } else if (this.activeAbility.hasExtraLife && !this.activeAbility.lifeUsed) {
+                console.log('🫧 Stella used her bubble extra life - pipe destroyed!');
+                this.showAbilityActivation('� BUBBLE LIFE SAVED YOU! PIPE DESTROYED!');
+                this.activeAbility.lifeUsed = true; // Mark extra life as used
+                
+                // Don't reset position - let Stella continue flying through the destroyed pipe
+                console.log('🫧 Pipe destroyed, Stella continues with bubble active');
+                return true; // Collision handled, pipe destroyed
+            } else {
+                console.log('🫧 Extra life not available or already used - proceeding with normal collision');
+            }
         }
         
         return false; // Normal collision
@@ -568,6 +759,22 @@ export class AbilityManager {
 
     isBombFuseActive() {
         return this.activeAbility && this.activeAbility.type === 'bomb' && !this.activeAbility.exploded;
+    }
+
+    isGravityBubbleActive() {
+        return this.activeAbility && this.activeAbility.type === 'gravityBubble';
+    }
+
+    isStuckToWall() {
+        return this.stellaIsStuckToWall;
+    }
+
+    getGravityReduction() {
+        return this.isGravityBubbleActive() ? this.stellaGravityReduction : 1;
+    }
+
+    getHitboxShrink() {
+        return this.isGravityBubbleActive() ? this.stellaHitboxShrink : 1;
     }
 
     // Matilda's Egg Bomb ability - called when Matilda dies
@@ -959,6 +1166,154 @@ export class AbilityManager {
         }
     }
 
+    // Render Stella's gravity bubble effect if active
+    renderGravityBubble(ctx) {
+        if (!this.isGravityBubbleActive()) return;
+
+        const birdX = this.game.bird.x;
+        const birdY = this.game.bird.y;
+        const birdSize = this.game.bird.hitboxRadius || this.game.bird.size || 20;
+        const time = Date.now() * 0.003; // Animation timing
+
+        ctx.save();
+
+        // Draw sparkle trail
+        this.stellaBubbleTrail.forEach((sparkle, index) => {
+            const age = Date.now() - sparkle.timestamp;
+            const maxAge = 800;
+            const alpha = Math.max(0, 1 - (age / maxAge));
+            
+            if (alpha > 0) {
+                ctx.globalAlpha = alpha * 0.4;
+                ctx.fillStyle = '#FFB6C1';
+                ctx.beginPath();
+                ctx.arc(sparkle.x, sparkle.y, sparkle.size * 0.8, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Twinkling effect
+                if (Math.random() > 0.85) {
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.globalAlpha = alpha * 0.3;
+                    ctx.beginPath();
+                    ctx.arc(sparkle.x, sparkle.y, sparkle.size * 0.3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        });
+
+        // Main bubble - more prominent and animated
+        const bubbleRadius = birdSize * 2.2; // Larger bubble
+        const pulseEffect = 1 + Math.sin(time * 4) * 0.1; // Gentle pulsing
+        const currentRadius = bubbleRadius * pulseEffect;
+        
+        // Create animated gradient for bubble effect
+        const gradient = ctx.createRadialGradient(
+            birdX, birdY, 0,
+            birdX, birdY, currentRadius
+        );
+        gradient.addColorStop(0, 'rgba(255, 182, 193, 0.6)'); // More visible center
+        gradient.addColorStop(0.5, 'rgba(255, 105, 180, 0.4)'); 
+        gradient.addColorStop(0.8, 'rgba(255, 20, 147, 0.2)'); 
+        gradient.addColorStop(1, 'rgba(255, 20, 147, 0.05)'); 
+        
+        ctx.globalAlpha = 0.7;
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(birdX, birdY, currentRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Animated bubble outline with shimmer effect
+        ctx.globalAlpha = 0.6 + Math.sin(time * 3) * 0.2; // Shimmering opacity
+        ctx.strokeStyle = '#FF69B4'; // Hot pink
+        ctx.lineWidth = 2;
+        
+        // Rotating dashed line effect
+        const dashOffset = time * 20;
+        ctx.setLineDash([5, 5]);
+        ctx.lineDashOffset = dashOffset;
+        ctx.beginPath();
+        ctx.arc(birdX, birdY, currentRadius, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        
+        // Secondary bubble ring for extra visual impact
+        ctx.globalAlpha = 0.3;
+        ctx.strokeStyle = '#FFB6C1';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(birdX, birdY, currentRadius * 1.15, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Floating sparkles around the bubble (more prominent)
+        for (let i = 0; i < 6; i++) { // More sparkles
+            const angle = (i / 6) * Math.PI * 2 + time;
+            const distance = currentRadius + 8 + Math.sin(time * 2 + i) * 5;
+            const sparkleX = birdX + Math.cos(angle) * distance;
+            const sparkleY = birdY + Math.sin(angle) * distance;
+            
+            ctx.globalAlpha = 0.7 + Math.sin(time * 3 + i) * 0.3;
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(sparkleX, sparkleY, 2 + Math.sin(time * 4 + i) * 0.5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Star sparkle effect
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(sparkleX - 3, sparkleY);
+            ctx.lineTo(sparkleX + 3, sparkleY);
+            ctx.moveTo(sparkleX, sparkleY - 3);
+            ctx.lineTo(sparkleX, sparkleY + 3);
+            ctx.stroke();
+        }
+
+        // Extra life indicator - heart icon if life is available
+        if (this.activeAbility.hasExtraLife && !this.activeAbility.lifeUsed) {
+            const heartX = birdX + currentRadius * 0.7;
+            const heartY = birdY - currentRadius * 0.7;
+            const heartSize = 8;
+            
+            ctx.globalAlpha = 0.8 + Math.sin(time * 5) * 0.2; // Pulsing heart
+            ctx.fillStyle = '#FF1493'; // Deep pink
+            
+            // Draw heart shape
+            ctx.beginPath();
+            ctx.moveTo(heartX, heartY + heartSize/4);
+            ctx.quadraticCurveTo(heartX - heartSize/2, heartY - heartSize/4, heartX - heartSize/4, heartY);
+            ctx.quadraticCurveTo(heartX, heartY - heartSize/2, heartX + heartSize/4, heartY);
+            ctx.quadraticCurveTo(heartX + heartSize/2, heartY - heartSize/4, heartX, heartY + heartSize/4);
+            ctx.fill();
+            
+            // Heart outline
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+
+        // Show wall stick indicator if stuck to wall
+        if (this.stellaIsStuckToWall) {
+            ctx.globalAlpha = 0.8;
+            ctx.fillStyle = '#32CD32'; // Lime green
+            ctx.font = 'bold 12px Arial'; // Smaller font
+            ctx.textAlign = 'center';
+            ctx.fillText('🧲', birdX + 30, birdY - 10); // Just a small magnetic icon
+            
+            // Draw more subtle connection indicator
+            ctx.strokeStyle = '#32CD32';
+            ctx.lineWidth = 1; // Thinner line
+            ctx.setLineDash([2, 4]); // More subtle dashed line
+            ctx.globalAlpha = 0.3;
+            ctx.beginPath();
+            ctx.moveTo(birdX, birdY);
+            ctx.lineTo(this.stellaStuckWallX, birdY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        ctx.restore();
+    }
+
     showDurationDisplay(abilityName) {
         const durationTimer = document.getElementById('abilityDuration');
         const durationText = document.getElementById('abilityDurationText');
@@ -1009,6 +1364,12 @@ export class AbilityManager {
         this.bluesBirdCount = 3;
         this.bluesLastSpawn = 0;
         this.bluesGameStartTime = 0;
+        
+        // Reset Stella's gravity bubble ability
+        this.stellaIsStuckToWall = false;
+        this.stellaWallStickStartTime = 0;
+        this.stellaStuckWallX = 0;
+        this.stellaBubbleTrail = [];
         
         // Unfreeze game if frozen
         if (this.gameFrozen) {

@@ -6,6 +6,9 @@ export class Bird {
         this.rageMode = false;
         this.bombFuse = false;
         this.invincible = false;
+        this.gravityBubble = false;
+        this.gravityReduction = 0.3;
+        this.hitboxShrink = 0.8;
         this.reset(x, y);
     }
 
@@ -17,6 +20,7 @@ export class Bird {
         this.flapAnimation = 0;
         this.trail = [];
         this.rageMode = false;
+        this.gravityBubble = false;
         this.visible = true; // Bird is visible by default
     }
 
@@ -35,6 +39,11 @@ export class Bird {
         let gravityMultiplier = speedMultiplier;
         if (this.rageMode) {
             gravityMultiplier *= 0.7; // Reduced gravity during rage mode for more dramatic effect
+        }
+        
+        // Apply gravity bubble effect (70% reduction when active)
+        if (this.isGravityBubbleActive()) {
+            gravityMultiplier *= this.gravityReduction; // Apply gravity reduction
         }
         
         this.velocity += GRAVITY * gravityMultiplier;
@@ -67,6 +76,11 @@ export class Bird {
             flapStrength *= 1.3; // 30% stronger flap in rage mode - more balanced
         }
         
+        // Reduce flap strength when Gravity Bubble is active to compensate for reduced gravity
+        if (this.isGravityBubbleActive()) {
+            flapStrength *= 0.6; // Reduce flap strength by 40% to balance with reduced gravity
+        }
+        
         this.velocity = flapStrength;
         this.rotation = -0.3;
         this.flapAnimation = 1;
@@ -87,6 +101,17 @@ export class Bird {
         console.log(`Invincibility ${active ? 'activated' : 'deactivated'}`);
     }
 
+    setGravityBubble(active, gravityReduction = 0.3, hitboxShrink = 0.8) {
+        this.gravityBubble = active;
+        this.gravityReduction = gravityReduction;
+        this.hitboxShrink = hitboxShrink;
+        console.log(`Gravity bubble ${active ? 'activated' : 'deactivated'}`);
+        
+        if (active) {
+            console.log(`Gravity reduced to ${gravityReduction * 100}%, hitbox shrunk to ${hitboxShrink * 100}%`);
+        }
+    }
+
     isRageModeActive() {
         return this.rageMode;
     }
@@ -99,27 +124,43 @@ export class Bird {
         return this.invincible;
     }
 
+    isGravityBubbleActive() {
+        return this.gravityBubble;
+    }
+
+    getHitboxRadius() {
+        const baseRadius = this.hitboxRadius || BIRD_SIZE / 2;
+        return this.isGravityBubbleActive() ? baseRadius * this.hitboxShrink : baseRadius;
+    }
+
     checkBounds(canvasHeight) {
         return this.y + BIRD_SIZE/2 >= canvasHeight || this.y - BIRD_SIZE/2 <= 0;
     }
 
     getBounds() {
         const character = this.characterManager.getCurrentCharacter();
+        let hitboxSize = BIRD_SIZE;
+        
+        // Apply gravity bubble hitbox shrink
+        if (this.isGravityBubbleActive()) {
+            hitboxSize *= this.hitboxShrink;
+        }
+        
         if (character.id === 'chuck') {
             // Triangle bounds for Chuck - slightly smaller for better gameplay
             return {
-                left: this.x - BIRD_SIZE/2.2,
-                right: this.x + BIRD_SIZE/2.2,
-                top: this.y - BIRD_SIZE/2.2,
-                bottom: this.y + BIRD_SIZE/2.2
+                left: this.x - hitboxSize/2.2,
+                right: this.x + hitboxSize/2.2,
+                top: this.y - hitboxSize/2.2,
+                bottom: this.y + hitboxSize/2.2
             };
         } else {
             // Circular bounds for other birds
             return {
-                left: this.x - BIRD_SIZE/2,
-                right: this.x + BIRD_SIZE/2,
-                top: this.y - BIRD_SIZE/2,
-                bottom: this.y + BIRD_SIZE/2
+                left: this.x - hitboxSize/2,
+                right: this.x + hitboxSize/2,
+                top: this.y - hitboxSize/2,
+                bottom: this.y + hitboxSize/2
             };
         }
     }

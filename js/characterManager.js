@@ -5,14 +5,14 @@ export class CharacterManager {
             stella: {
                 id: 'stella',
                 name: 'Stella',
-                description: 'The pink bird with bubble shield powers',
+                description: 'The pink bird with gravity-defying bubble powers',
                 price: 180,
                 owned: false,
                 stats: {
-                    speed: 7,
+                    speed: 6,
                     power: 5,
-                    agility: 9,
-                    special: 'Bubble Shield'
+                    agility: 6, // Reduced from 9 to 6 for normal jump height
+                    special: 'Gravity Bubble'
                 },
                 colors: {
                     body: '#FF1493',        // Deep pink

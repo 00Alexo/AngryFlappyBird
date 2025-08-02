@@ -212,6 +212,23 @@ export class Game {
                     this.gameOver();
                     return;
                 }
+            } else if (this.abilityManager.isGravityBubbleActive()) {
+                // Stella's gravity bubble collision handling
+                if (this.pipeManager.checkAndSmashCollisions(this.bird)) {
+                    console.log('🔍 Gravity bubble collision detected in game.js');
+                    const handled = this.abilityManager.onPipeHit();
+                    console.log('🔍 onPipeHit returned:', handled);
+                    if (handled) {
+                        // Extra life used - pipe was destroyed, add smash effect
+                        console.log('🫧 Stella used bubble life - pipe destroyed!');
+                        this.particleSystem.addExplosionParticles(this.bird.x, this.bird.y);
+                    } else {
+                        // Extra life not available or already used
+                        console.log('🔍 Collision not handled, calling gameOver');
+                        this.gameOver();
+                        return;
+                    }
+                }
             } else {
                 // Normal collision detection
                 if (this.pipeManager.checkCollisions(this.bird)) {

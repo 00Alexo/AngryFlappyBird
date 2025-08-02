@@ -1659,6 +1659,41 @@
     border-radius: 20px 20px 0 0;
 }
 
+/* Character avatar in info popup - override size and positioning */
+.character-info-header .character-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid white;
+    flex-shrink: 0;
+    position: relative;
+}
+
+/* Scale down elements for smaller avatar in popup */
+.character-info-header .character-avatar .bubble {
+    width: 60px !important;
+    height: 60px !important;
+    top: 10px !important;
+    left: 10px !important;
+}
+
+.character-info-header .character-avatar .eye {
+    transform: scale(0.8);
+}
+
+.character-info-header .character-avatar .beak {
+    transform: scale(0.8);
+}
+
+.character-info-header .character-avatar .blues-eyes,
+.character-info-header .character-avatar .blues-beaks {
+    transform: scale(0.8);
+}
+
 .character-info-avatar {
     width: 80px;
     height: 80px;
