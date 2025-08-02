@@ -361,12 +361,24 @@ export class CharacterUI {
                 tips: ["Stay tuned for Chuck's triangular speed ability!"]
             },
             bomb: {
-                description: "Bomb's explosive ability - coming soon!",
-                duration: "Coming soon", 
-                cooldown: "Coming soon",
-                activation: "Coming soon",
-                effects: ["💥 Not yet implemented"],
-                tips: ["Stay tuned for Bomb's explosive ability!"]
+                description: "Bomb's fuse ignites and he becomes a living explosive! When activated, Bomb glows with an ominous red-orange aura before unleashing a massive explosion that obliterates everything in his path. His volatile nature finally unleashed!",
+                duration: "3 seconds (fuse burning) + instant explosion",
+                cooldown: "60 seconds",
+                activation: "Press E during gameplay",
+                effects: [
+                    "� 3-second fuse countdown with glowing red aura and sparks",
+                    "💥 Massive explosion destroys ALL pipes within a huge radius (scales with screen size)",
+                    "⚡ Explosion creates a temporary safe corridor through the level",
+                    "🌟 Dramatic screen shake and particle effects on detonation",
+                    "💀 Bomb respawns 2 seconds after explosion with brief invincibility"
+                ],
+                tips: [
+                    "Survive the 3-second fuse countdown to trigger the explosion",
+                    "Use strategically - the long cooldown means timing is crucial",
+                    "Perfect for clearing clustered pipe sections",
+                    "If you hit a pipe during the fuse, the ability is wasted!",
+                    "The explosion automatically scales to your device - guarantees destroying at least 2 pipes!"
+                ]
             },
             blues: {
                 description: "The Blues are three birds fighting together! Start with Jim, Jake, and Jay. When you hit a pipe, you destroy it but lose one bird. Lost birds respawn every 150 seconds. Score multiplier equals the number of alive birds!",
@@ -375,8 +387,8 @@ export class CharacterUI {
                 activation: "Always active - no manual trigger",
                 effects: [
                     "🔵🔵🔵 Start with 3 birds (Jim, Jake, Jay)",
-                    "� Destroy pipes when hit (but lose a bird)",
-                    "� Score multiplier = number of alive birds (1x, 2x, or 3x)",
+                    "🔨 Destroy pipes when hit (but lose a bird)",
+                    "🔢 Score multiplier = number of alive birds (1x, 2x, or 3x)",
                     "💀 Game over only when all 3 birds are lost"
                 ],
                 tips: [

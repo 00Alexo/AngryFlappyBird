@@ -4,6 +4,8 @@ export class Bird {
     constructor(x, y, characterManager) {
         this.characterManager = characterManager;
         this.rageMode = false;
+        this.bombFuse = false;
+        this.invincible = false;
         this.reset(x, y);
     }
 
@@ -75,8 +77,26 @@ export class Bird {
         console.log(`Rage mode ${active ? 'activated' : 'deactivated'}`);
     }
 
+    setBombFuse(active) {
+        this.bombFuse = active;
+        console.log(`Bomb fuse ${active ? 'lit' : 'extinguished'}`);
+    }
+
+    setInvincible(active) {
+        this.invincible = active;
+        console.log(`Invincibility ${active ? 'activated' : 'deactivated'}`);
+    }
+
     isRageModeActive() {
         return this.rageMode;
+    }
+
+    isBombFuseActive() {
+        return this.bombFuse;
+    }
+
+    isInvincible() {
+        return this.invincible;
     }
 
     checkBounds(canvasHeight) {
@@ -107,6 +127,12 @@ export class Bird {
     draw(ctx) {
         // Don't draw if not visible (unless forced visible)
         if (!this.visible && !this.forceVisible) return;
+        
+        // Invincibility flashing effect
+        if (this.invincible) {
+            const flashRate = Math.sin(Date.now() * 0.02);
+            if (flashRate < 0) return; // Skip drawing for flashing effect
+        }
         
         const character = this.characterManager.getCurrentCharacter();
         const colors = character.colors;
@@ -386,7 +412,52 @@ export class Bird {
                 ctx.moveTo(0, -BIRD_SIZE/2);
                 ctx.lineTo(0, -BIRD_SIZE/2 - 8);
                 ctx.stroke();
-                // Spark effect
+                
+                // Enhanced fuse effects when active
+                if (this.bombFuse) {
+                    const time = Date.now() * 0.01;
+                    
+                    // Glowing fuse
+                    ctx.save();
+                    ctx.shadowColor = '#FF4500';
+                    ctx.shadowBlur = 8;
+                    ctx.strokeStyle = '#FF4500';
+                    ctx.lineWidth = 4;
+                    ctx.globalAlpha = 0.8 + Math.sin(time * 2) * 0.2;
+                    ctx.beginPath();
+                    ctx.moveTo(0, -BIRD_SIZE/2);
+                    ctx.lineTo(0, -BIRD_SIZE/2 - 8);
+                    ctx.stroke();
+                    ctx.restore();
+                    
+                    // Sparks from the fuse
+                    for (let i = 0; i < 5; i++) {
+                        const sparkAngle = (time + i * 0.5) % (Math.PI * 2);
+                        const sparkDist = 12 + Math.sin(time + i) * 3;
+                        const sparkX = Math.cos(sparkAngle) * sparkDist;
+                        const sparkY = -BIRD_SIZE/2 - 8 + Math.sin(sparkAngle) * sparkDist;
+                        
+                        ctx.fillStyle = `rgba(255, ${Math.floor(165 + Math.random() * 90)}, 0, ${0.7 + Math.random() * 0.3})`;
+                        ctx.beginPath();
+                        ctx.arc(sparkX, sparkY, 2 + Math.random() * 2, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    
+                    // Red aura around bomb during fuse
+                    ctx.save();
+                    const fuseAuraRadius = BIRD_SIZE/2 + 15 + Math.sin(time * 3) * 5;
+                    const fuseAura = ctx.createRadialGradient(0, 0, BIRD_SIZE/2, 0, 0, fuseAuraRadius);
+                    fuseAura.addColorStop(0, 'rgba(255, 0, 0, 0.2)');
+                    fuseAura.addColorStop(0.5, 'rgba(255, 69, 0, 0.4)');
+                    fuseAura.addColorStop(1, 'rgba(255, 69, 0, 0)');
+                    ctx.fillStyle = fuseAura;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, fuseAuraRadius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+                
+                // Spark effect (always present)
                 if (Math.random() < 0.4) {
                     ctx.fillStyle = '#FFAA00';
                     ctx.beginPath();

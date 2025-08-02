@@ -68,6 +68,38 @@ export class EggBombParticle extends Particle {
     }
 }
 
+export class BombParticle extends Particle {
+    constructor(x, y, vx, vy, color, life = 2) {
+        super(x, y, vx, vy, color, life);
+        this.size = Math.random() * 8 + 4; // Larger particles
+        this.originalLife = life;
+    }
+
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += 0.3; // Stronger gravity
+        this.vx *= 0.98; // Air resistance
+        this.life -= 0.02;
+        return this.life > 0;
+    }
+
+    draw(ctx) {
+        ctx.save();
+        ctx.globalAlpha = this.life / this.originalLife;
+        
+        // Create glowing effect
+        ctx.shadowColor = this.color;
+        ctx.shadowBlur = this.size * 2;
+        
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size * (this.life / this.originalLife), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
 export class ParticleSystem {
     constructor() {
         this.particles = [];
@@ -110,6 +142,42 @@ export class ParticleSystem {
             );
             this.particles.push(particle);
         }
+    }
+
+    addBombExplosionParticles(x, y, radius) {
+        // Massive explosion with lots of particles
+        const particleCount = Math.min(100, Math.floor(radius / 2)); // Scale with radius
+        
+        for (let i = 0; i < particleCount; i++) {
+            const angle = (Math.PI * 2 * i) / particleCount;
+            const speed = Math.random() * 15 + 5; // High speed particles
+            const vx = Math.cos(angle) * speed;
+            const vy = Math.sin(angle) * speed;
+            
+            const particle = new ExplosionParticle(
+                x,
+                y,
+                vx,
+                vy,
+                `hsl(${Math.random() * 60 + 0}, 90%, ${Math.random() * 30 + 60}%)`, // Orange/red/yellow colors
+                1.5 // Longer life
+            );
+            this.particles.push(particle);
+        }
+        
+        // Add some special large particles for dramatic effect
+        for (let i = 0; i < 20; i++) {
+            const particle = new BombParticle(
+                x,
+                y,
+                Math.random() * 20 - 10,
+                Math.random() * 20 - 10,
+                `hsl(${Math.random() * 40 + 10}, 80%, 60%)` // Fiery colors
+            );
+            this.particles.push(particle);
+        }
+        
+        console.log(`💥 Created ${particleCount + 20} bomb explosion particles`);
     }
 
     addEggBombParticles(x, y) {

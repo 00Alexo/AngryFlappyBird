@@ -177,37 +177,47 @@ export class Game {
         // Update pipes
         this.pipeManager.update(this.bird);
 
-        // Check pipe collisions
-        if (this.abilityManager.isRageModeActive()) {
-            // During rage mode, smash through pipes
-            if (this.pipeManager.checkAndSmashCollisions(this.bird)) {
-                console.log('Pipe smashed by rage mode!');
-                // Add smash effect
-                this.particleSystem.addExplosionParticles(this.bird.x, this.bird.y);
-                // Trigger ability end on pipe hit
-                this.abilityManager.onPipeHit();
-            }
-        } else if (this.abilityManager.isBluesActive()) {
-            // Blues collision: destroy pipe and lose one bird
-            if (this.pipeManager.checkAndSmashCollisions(this.bird)) {
-                console.log('🔵 Blues hit pipe! Bird lost, pipe destroyed');
-                // Add smash effect
-                this.particleSystem.addExplosionParticles(this.bird.x, this.bird.y);
-                // Lose one bird
-                const shouldEndGame = this.abilityManager.onBluesBirdDeath();
-                if (shouldEndGame) {
+        // Check pipe collisions (skip if bird is invincible)
+        if (!this.bird.isInvincible()) {
+            if (this.abilityManager.isRageModeActive()) {
+                // During rage mode, smash through pipes
+                if (this.pipeManager.checkAndSmashCollisions(this.bird)) {
+                    console.log('Pipe smashed by rage mode!');
+                    // Add smash effect
+                    this.particleSystem.addExplosionParticles(this.bird.x, this.bird.y);
+                    // Trigger ability end on pipe hit
+                    this.abilityManager.onPipeHit();
+                }
+            } else if (this.abilityManager.isBluesActive()) {
+                // Blues collision: destroy pipe and lose one bird
+                if (this.pipeManager.checkAndSmashCollisions(this.bird)) {
+                    console.log('🔵 Blues hit pipe! Bird lost, pipe destroyed');
+                    // Add smash effect
+                    this.particleSystem.addExplosionParticles(this.bird.x, this.bird.y);
+                    // Lose one bird
+                    const shouldEndGame = this.abilityManager.onBluesBirdDeath();
+                    if (shouldEndGame) {
+                        this.gameOver();
+                        return;
+                    } else {
+                        // Reset bird position but continue game
+                        this.bird.reset(this.canvas.width * 0.2, this.canvas.height / 2);
+                    }
+                }
+            } else if (this.abilityManager.isBombFuseActive()) {
+                // During bomb fuse, hitting a pipe wastes the ability
+                if (this.pipeManager.checkCollisions(this.bird)) {
+                    console.log('💣 Bomb hit pipe during fuse - ability wasted!');
+                    this.abilityManager.onPipeHit(); // This will deactivate the ability
                     this.gameOver();
                     return;
-                } else {
-                    // Reset bird position but continue game
-                    this.bird.reset(this.canvas.width * 0.2, this.canvas.height / 2);
                 }
-            }
-        } else {
-            // Normal collision detection
-            if (this.pipeManager.checkCollisions(this.bird)) {
-                this.gameOver();
-                return;
+            } else {
+                // Normal collision detection
+                if (this.pipeManager.checkCollisions(this.bird)) {
+                    this.gameOver();
+                    return;
+                }
             }
         }
 

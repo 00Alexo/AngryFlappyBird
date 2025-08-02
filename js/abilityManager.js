@@ -1,5 +1,5 @@
 /* Ability System - Handles character special abilities */
-import { GAME_STATES } from './constants.js';
+import { GAME_STATES, PIPE_WIDTH } from './constants.js';
 
 // Egg Bomb class for Matilda's ability
 class EggBomb {
@@ -104,6 +104,12 @@ export class AbilityManager {
         this.freezeOverlay = null;
         this.frozenBirdVelocity = null;
         
+        // Bomb's explosion ability state
+        this.bombFuseTimer = 0;
+        this.bombFuseDuration = 3000; // 3 seconds fuse
+        this.bombExplosionRadius = 0; // Will be calculated dynamically based on canvas size
+        this.bombCooldownDuration = 60000; // 60 seconds cooldown
+        
         // Blues' Triple Bird ability state
         this.bluesBirdCount = 3; // Start with 3 birds (Jim, Jake, Jay)
         this.bluesMaxBirds = 3; // Maximum 3 birds (Jim, Jake, Jay)
@@ -146,9 +152,11 @@ export class AbilityManager {
         console.log('Current character:', character ? character.name : 'None'); // Debug log
         if (!character) return;
 
-        // Set cooldown duration for Red
+        // Set cooldown duration for different characters
         if (character.id === 'red') {
             this.cooldownDuration = 40000; // 40 seconds
+        } else if (character.id === 'bomb') {
+            this.cooldownDuration = this.bombCooldownDuration; // 60 seconds
         } else {
             this.cooldownDuration = 30000; // Default 30 seconds
         }
@@ -169,6 +177,9 @@ export class AbilityManager {
         switch (character.id) {
             case 'red':
                 this.activateRageMode();
+                break;
+            case 'bomb':
+                this.activateBombExplosion();
                 break;
             case 'blues':
                 // Blues' ability is passive - no manual activation needed
@@ -209,6 +220,28 @@ export class AbilityManager {
         this.showDurationDisplay('RAGE MODE');
     }
 
+    activateBombExplosion() {
+        console.log('💣 Activating Bomb Explosion!');
+        
+        // Create bomb explosion ability with fuse timer
+        this.activeAbility = {
+            type: 'bomb',
+            startTime: Date.now(),
+            duration: this.bombFuseDuration, // 3 seconds fuse
+            fuseStarted: true,
+            exploded: false
+        };
+
+        // Apply bomb fuse effects to bird
+        this.game.bird.setBombFuse(true);
+        
+        // Show visual feedback
+        this.showAbilityActivation('💣 BOMB FUSE LIT! 3 SECONDS!');
+        
+        // Show duration countdown
+        this.showDurationDisplay('BOMB FUSE');
+    }
+
     update() {
         // Update active ability
         if (this.activeAbility) {
@@ -219,7 +252,16 @@ export class AbilityManager {
             // Update duration countdown display
             this.updateDurationDisplay(remaining);
             
-            if (elapsed >= this.activeAbility.duration || this.activeAbility.hasSmashed) {
+            // Handle bomb explosion at end of fuse
+            if (this.activeAbility.type === 'bomb' && !this.activeAbility.exploded && elapsed >= this.activeAbility.duration) {
+                this.triggerBombExplosion();
+                this.activeAbility.exploded = true;
+                // Don't deactivate yet - let explosion effects play out
+            }
+            
+            // Deactivate ability after duration or after smashing (rage mode only)
+            if (elapsed >= this.activeAbility.duration || 
+                (this.activeAbility.type === 'rage' && this.activeAbility.hasSmashed)) {
                 this.deactivateAbility();
             }
         }
@@ -267,6 +309,11 @@ export class AbilityManager {
         if (this.activeAbility.type === 'rage') {
             this.game.bird.setRageMode(false);
         }
+        
+        // Remove bomb fuse effects
+        if (this.activeAbility.type === 'bomb') {
+            this.game.bird.setBombFuse(false);
+        }
 
         this.activeAbility = null;
 
@@ -278,12 +325,124 @@ export class AbilityManager {
         this.startCooldown();
     }
 
+    triggerBombExplosion() {
+        console.log('💥 BOMB EXPLOSION TRIGGERED!');
+        
+        const birdX = this.game.bird.x;
+        const birdY = this.game.bird.y;
+        
+        // Calculate dynamic explosion radius based on canvas size
+        // Ensure it can destroy at least 2 pipes by making it proportional to screen width
+        const canvasWidth = this.game.canvas.width;
+        const baseRadius = canvasWidth * 0.4; // 40% of screen width
+        const minRadius = Math.max(400, canvasWidth * 0.3); // Minimum 400px or 30% of screen width
+        this.bombExplosionRadius = Math.max(baseRadius, minRadius);
+        
+        console.log(`💥 Dynamic explosion radius: ${this.bombExplosionRadius}px (canvas width: ${canvasWidth}px)`);
+        
+        // Find all pipes within explosion radius
+        const pipesToDestroy = [];
+        let totalScore = 0;
+        
+        this.game.pipeManager.pipes.forEach((pipe, index) => {
+            const pipeX = pipe.x + (PIPE_WIDTH / 2); // Pipe center X
+            const topPipeY = pipe.topHeight / 2; // Top pipe center Y
+            const bottomPipeY = pipe.bottomY + (this.game.canvas.height - pipe.bottomY) / 2; // Bottom pipe center Y
+            
+            // Check distance to both top and bottom parts of the pipe
+            const distanceToTop = Math.sqrt(Math.pow(pipeX - birdX, 2) + Math.pow(topPipeY - birdY, 2));
+            const distanceToBottom = Math.sqrt(Math.pow(pipeX - birdX, 2) + Math.pow(bottomPipeY - birdY, 2));
+            
+            // If either part is within explosion radius, make the pipe fall down
+            if (distanceToTop <= this.bombExplosionRadius || distanceToBottom <= this.bombExplosionRadius) {
+                this.makePipeFallDown(pipe);
+                pipesToDestroy.push(pipe);
+                // Award points for each destroyed pipe
+                totalScore += 1;
+            }
+        });
+        
+        // Don't remove pipes immediately - let them fall down with animation
+        // The pipes will be removed automatically when they hit the ground
+        
+        // Award score for destroyed pipes
+        for (let i = 0; i < totalScore; i++) {
+            this.game.gameState.incrementScore();
+        }
+        
+        // Create massive explosion effect
+        this.game.particleSystem.addBombExplosionParticles(birdX, birdY, this.bombExplosionRadius);
+        
+        // Screen shake effect
+        this.createScreenShake();
+        
+        // Respawn Bomb after explosion with brief invincibility
+        setTimeout(() => {
+            this.respawnBombAfterExplosion();
+        }, 2000); // 2 second delay
+        
+        // Show explosion feedback
+        this.showAbilityActivation(`💥 EXPLOSION! ${pipesToDestroy.length} PIPES DESTROYED! +${totalScore} POINTS!`);
+        
+        console.log(`💥 Destroyed ${pipesToDestroy.length} pipes, awarded ${totalScore} points`);
+    }
+
+    respawnBombAfterExplosion() {
+        console.log('🔄 Respawning Bomb after explosion!');
+        
+        // Don't move the bird - just reset velocity and add invincibility
+        this.game.bird.velocity.y = 0;
+        this.game.bird.velocity.x = 0; // Stop any horizontal movement
+        
+        // Brief invincibility (2 seconds)
+        this.game.bird.setInvincible(true);
+        setTimeout(() => {
+            this.game.bird.setInvincible(false);
+        }, 2000);
+        
+        // Show respawn notification
+        this.showAbilityActivation('💣 BOMB RESPAWNED WITH INVINCIBILITY!');
+        
+        console.log('✅ Bomb respawn complete!');
+    }
+
+    createScreenShake() {
+        // Create screen shake effect
+        const originalTransform = this.game.canvas.style.transform || '';
+        let shakeIntensity = 15;
+        let shakeCount = 0;
+        const maxShakes = 20;
+        
+        const shakeInterval = setInterval(() => {
+            if (shakeCount >= maxShakes) {
+                this.game.canvas.style.transform = originalTransform;
+                clearInterval(shakeInterval);
+                return;
+            }
+            
+            const offsetX = (Math.random() - 0.5) * shakeIntensity;
+            const offsetY = (Math.random() - 0.5) * shakeIntensity;
+            this.game.canvas.style.transform = `${originalTransform} translate(${offsetX}px, ${offsetY}px)`;
+            
+            shakeIntensity *= 0.9; // Decay shake intensity
+            shakeCount++;
+        }, 50);
+    }
+
     onPipeHit() {
         if (this.activeAbility && this.activeAbility.type === 'rage' && this.activeAbility.canSmashPipes) {
             console.log('Pipe smashed during rage mode!');
             this.activeAbility.hasSmashed = true;
             return true; // Pipe was smashed
         }
+        
+        if (this.activeAbility && this.activeAbility.type === 'bomb' && !this.activeAbility.exploded) {
+            console.log('💣 Bomb hit pipe during fuse - ability wasted!');
+            this.showAbilityActivation('💣 FUSE EXTINGUISHED! ABILITY WASTED!');
+            this.deactivateAbility(); // Waste the ability
+            return false; // Normal collision (bomb dies)
+        }
+        
         return false; // Normal collision
     }
 
@@ -405,6 +564,10 @@ export class AbilityManager {
 
     isRageModeActive() {
         return this.activeAbility && this.activeAbility.type === 'rage';
+    }
+
+    isBombFuseActive() {
+        return this.activeAbility && this.activeAbility.type === 'bomb' && !this.activeAbility.exploded;
     }
 
     // Matilda's Egg Bomb ability - called when Matilda dies
@@ -838,6 +1001,9 @@ export class AbilityManager {
         this.matildaResurrectionUsed = false;
         this.matildaLastDeath = 0;
         this.eggBomb = null;
+        
+        // Reset Bomb's explosion ability
+        this.bombFuseTimer = 0;
         
         // Reset Blues' ability
         this.bluesBirdCount = 3;
