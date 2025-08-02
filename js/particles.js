@@ -43,6 +43,31 @@ export class ExplosionParticle extends Particle {
     }
 }
 
+export class EggBombParticle extends Particle {
+    constructor(x, y, vx, vy, color, life = 1) {
+        super(x, y, vx, vy, color, life);
+        this.size = Math.random() * 4 + 2;
+    }
+
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += 0.1; // lighter gravity
+        this.life -= 0.015; // slower fade
+        return this.life > 0;
+    }
+
+    draw(ctx) {
+        ctx.save();
+        ctx.globalAlpha = this.life;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
 export class ParticleSystem {
     constructor() {
         this.particles = [];
@@ -82,6 +107,34 @@ export class ParticleSystem {
                 Math.random() * 10 - 5,
                 Math.random() * 10 - 5,
                 `hsl(${Math.random() * 60}, 70%, 50%)`
+            );
+            this.particles.push(particle);
+        }
+    }
+
+    addEggBombParticles(x, y) {
+        // Egg explosion particles
+        for (let i = 0; i < 20; i++) {
+            const particle = new EggBombParticle(
+                x,
+                y,
+                Math.random() * 8 - 4,
+                Math.random() * 8 - 4,
+                `hsl(${Math.random() * 40 + 40}, 60%, 70%)`, // Yellow to brown colors
+                1.5
+            );
+            this.particles.push(particle);
+        }
+        
+        // Add some white eggshell pieces
+        for (let i = 0; i < 15; i++) {
+            const particle = new EggBombParticle(
+                x,
+                y,
+                Math.random() * 6 - 3,
+                Math.random() * 6 - 3,
+                '#FFFAF0', // Floral white
+                1.2
             );
             this.particles.push(particle);
         }

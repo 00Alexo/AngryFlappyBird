@@ -393,7 +393,7 @@ export class Renderer {
         this.slingshots.forEach(slingshot => slingshot.draw(this.ctx));
     }
 
-    render(bird, pipeManager, particleSystem) {
+    render(bird, pipeManager, particleSystem, abilityManager = null) {
         // Update all background elements
         this.updateBackgroundElements();
         
@@ -406,10 +406,15 @@ export class Renderer {
         // Draw bird trail
         bird.drawTrail(this.ctx);
         
-        // Draw bird
+        // Draw bird (will be hidden if not visible)
         bird.draw(this.ctx);
         
         // Draw particles
         particleSystem.draw(this.ctx);
+        
+        // Draw egg bomb if active (Matilda's ability)
+        if (abilityManager) {
+            abilityManager.renderEggBomb(this.ctx);
+        }
     }
 }

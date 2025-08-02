@@ -12,13 +12,41 @@ export class Pipe {
         this.celebrationTimer = 0;
         this.shakeOffset = 0;
         this.glowRadius = 0;
+        
+        // Falling animation properties for Matilda's ability
+        this.falling = false;
+        this.fallSpeed = 0;
+        this.rotation = 0;
+        this.rotationSpeed = 0;
+        this.originalY = bottomY;
+        this.frozen = false; // For freezing horizontal movement
+        this.groundHitTime = 0; // Time when pipe hit the ground
     }
 
     update() {
-        this.x -= PIPE_SPEED;
+        // Only move horizontally if not frozen
+        if (!this.frozen) {
+            this.x -= PIPE_SPEED;
+        }
         
-        // Update highlight animation
-        if (this.highlight) {
+        // Handle falling animation (continues even when frozen for dramatic effect)
+        if (this.falling) {
+            this.fallSpeed += 0.5; // Gravity for falling pipes
+            this.bottomY += this.fallSpeed;
+            this.topHeight += this.fallSpeed;
+            this.rotation += this.rotationSpeed;
+            
+            // Check if pipe hits the ground (canvas height)
+            if (this.bottomY >= 600 && this.groundHitTime === 0) {
+                this.falling = false;
+                this.fallSpeed = 0;
+                this.groundHitTime = Date.now(); // Record when it hit the ground
+                console.log('💥 Pipe hit the ground! Will be removed immediately...');
+            }
+        }
+        
+        // Update highlight animation (only if not frozen)
+        if (this.highlight && !this.frozen) {
             this.highlightIntensity += this.highlightDirection * 0.1;
             if (this.highlightIntensity >= 1) {
                 this.highlightIntensity = 1;
@@ -38,10 +66,26 @@ export class Pipe {
     }
 
     isOffScreen() {
-        return this.x + PIPE_WIDTH < 0;
+        // Remove pipes that moved off the left side of screen
+        if (this.x + PIPE_WIDTH < 0) {
+            return true;
+        }
+        
+        // Remove pipes that have fallen to the ground immediately
+        if (this.groundHitTime > 0) {
+            console.log('🗑️ Removing fallen pipe immediately after hitting ground');
+            return true;
+        }
+        
+        return false;
     }
 
     checkCollision(bird) {
+        // Falling pipes don't cause collisions
+        if (this.falling) {
+            return false;
+        }
+        
         const birdBounds = bird.getBounds();
         const pipeLeft = this.x;
         const pipeRight = this.x + PIPE_WIDTH;
@@ -85,6 +129,21 @@ export class Pipe {
         // Apply shake effect when celebrating
         if (this.highlight && this.celebrationTimer > 0) {
             ctx.translate(this.shakeOffset, 0);
+        }
+        
+        // Apply rotation for falling pipes
+        if (this.falling && this.rotation !== 0) {
+            ctx.translate(this.x + PIPE_WIDTH/2, (this.topHeight + this.bottomY)/2);
+            ctx.rotate(this.rotation);
+            ctx.translate(-(this.x + PIPE_WIDTH/2), -((this.topHeight + this.bottomY)/2));
+        }
+        
+        // Add glow effect for falling pipes
+        if (this.falling) {
+            ctx.shadowColor = '#FFD700';
+            ctx.shadowBlur = 15;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
         }
         
         // Draw glow effect behind the tower when highlighted
@@ -433,5 +492,19 @@ export class PipeManager {
             };
         }
         return null;
+    }
+
+    // Freeze all pipes (stop horizontal movement but allow falling)
+    freezeAllPipes() {
+        this.pipes.forEach(pipe => {
+            pipe.frozen = true;
+        });
+    }
+
+    // Unfreeze all pipes (resume horizontal movement)
+    unfreezeAllPipes() {
+        this.pipes.forEach(pipe => {
+            pipe.frozen = false;
+        });
     }
 }

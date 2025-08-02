@@ -15,6 +15,7 @@ export class Bird {
         this.flapAnimation = 0;
         this.trail = [];
         this.rageMode = false;
+        this.visible = true; // Bird is visible by default
     }
 
     update() {
@@ -104,6 +105,9 @@ export class Bird {
     }
 
     draw(ctx) {
+        // Don't draw if not visible (unless forced visible)
+        if (!this.visible && !this.forceVisible) return;
+        
         const character = this.characterManager.getCurrentCharacter();
         const colors = character.colors;
         
@@ -434,6 +438,9 @@ export class Bird {
     }
 
     drawTrail(ctx) {
+        // Don't draw trail if bird is not visible (unless forced visible)
+        if (!this.visible && !this.forceVisible) return;
+        
         const character = this.characterManager.getCurrentCharacter();
         this.trail.forEach(point => {
             ctx.save();

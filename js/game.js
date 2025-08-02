@@ -69,6 +69,9 @@ export class Game {
         this.particleSystem.clear();
         this.bird.reset(this.canvas.width * 0.2, this.canvas.height / 2);
         
+        // Force remove any lingering freeze overlays
+        this.abilityManager.forceRemoveAllFreezeOverlays();
+        
         this.uiManager.hideStartScreen();
         this.stopBackgroundAnimation();
         
@@ -81,12 +84,14 @@ export class Game {
     }
 
     restartGame() {
+        this.abilityManager.forceRemoveAllFreezeOverlays(); // Clean up any overlays
         this.uiManager.hideGameOverScreen();
         this.renderer.generateBackgroundElements();
         this.startGame();
     }
 
     goToMainMenu() {
+        this.abilityManager.forceRemoveAllFreezeOverlays(); // Clean up any overlays
         this.uiManager.hideGameOverScreen();
         this.particleSystem.clear();
         this.pipeManager.reset();
@@ -99,6 +104,9 @@ export class Game {
 
     flap() {
         if (this.gameState.getState() !== GAME_STATES.PLAYING) return;
+        
+        // Don't allow flapping during ability freeze
+        if (this.abilityManager.isGameFrozen()) return;
         
         this.bird.flap();
         this.particleSystem.addFlapParticles(
@@ -127,11 +135,32 @@ export class Game {
     update() {
         if (this.gameState.getState() !== GAME_STATES.PLAYING) return;
 
+        // Check if game is frozen (for Matilda's ability)
+        if (this.abilityManager.isGameFrozen()) {
+            // During freeze, only update visual effects (bird is hidden)
+            
+            // Update visual effects only
+            this.particleSystem.update();
+            this.abilityManager.update(); // Keep egg bomb animation and countdown running
+            
+            // Update pipes but they're frozen (only falling animation continues)
+            this.pipeManager.update(this.bird);
+            
+            // Render everything as-is (bird won't appear since it's hidden)
+            this.renderer.render(this.bird, this.pipeManager, this.particleSystem, this.abilityManager);
+            return;
+        }
+
         // Update ability manager
         this.abilityManager.update();
 
         // Update bird
         this.bird.update();
+        
+        // Debug: Log bird visibility occasionally
+        if (Math.random() < 0.01) { // 1% chance each frame
+            console.log('🐦 Bird visible in update loop:', this.bird.visible, 'at position:', this.bird.x, this.bird.y);
+        }
 
         // Check ground/ceiling collision
         if (this.bird.checkBounds(this.canvas.height)) {
@@ -176,12 +205,24 @@ export class Game {
         }
 
         // Render everything
-        this.renderer.render(this.bird, this.pipeManager, this.particleSystem);
+        this.renderer.render(this.bird, this.pipeManager, this.particleSystem, this.abilityManager);
     }
 
     async gameOver() {
+        console.log('gameOver() called, checking for Matilda resurrection...');
+        
+        // Check if Matilda can resurrect BEFORE stopping the game loop
+        if (this.abilityManager.checkMatildaResurrection()) {
+            console.log('🥚 Matilda resurrected! Game continues...');
+            return; // Don't end the game, Matilda will respawn
+        }
+        
+        console.log('Game Over - proceeding with normal game over sequence');
         this.gameState.setState(GAME_STATES.GAME_OVER);
+        
+        // Only stop the game loop if resurrection didn't happen
         clearInterval(this.gameLoop);
+        this.gameLoop = null; // Set to null so resurrection can restart it
 
         // Reset ability timer
         this.abilityManager.resetAbility();
@@ -191,7 +232,7 @@ export class Game {
 
         // Continue rendering particles for explosion effect
         const explosionLoop = setInterval(() => {
-            this.renderer.render(this.bird, this.pipeManager, this.particleSystem);
+            this.renderer.render(this.bird, this.pipeManager, this.particleSystem, this.abilityManager);
             this.particleSystem.update();
             
             if (!this.particleSystem.hasParticles()) {
@@ -216,6 +257,18 @@ export class Game {
         setTimeout(() => {
             this.uiManager.showGameOverScreen(isNewHighScore);
         }, 1000);
+    }
+
+    // Method to restart game loop (for Matilda's resurrection)
+    startGameLoop() {
+        if (this.gameLoop) {
+            clearInterval(this.gameLoop);
+        }
+        
+        this.gameLoop = setInterval(() => {
+            this.update();
+            this.renderer.render(this.bird, this.pipeManager, this.particleSystem, this.abilityManager);
+        }, 1000 / 60);
     }
 
     getCharacterUI() {
