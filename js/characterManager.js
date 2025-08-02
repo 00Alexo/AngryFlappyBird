@@ -91,7 +91,7 @@ export class CharacterManager {
             blues: {
                 id: 'blues',
                 name: 'The Blues',
-                description: 'Jay, Jake & Jim - Three times the trouble',
+                description: 'Jim, Jake & Jay - Triple trouble in flight!',
                 price: 150,
                 owned: false,
                 stats: {
@@ -101,7 +101,7 @@ export class CharacterManager {
                     special: 'Triple Split'
                 },
                 colors: {
-                    body: '#4169E1',        // Royal blue
+                    body: '#4A90E2',        // Bright blue
                     secondary: '#1E3A8A',   // Dark blue for shadows
                     accent: '#87CEEB',      // Sky blue for highlights
                     beak: '#FFA500',       // Orange beak

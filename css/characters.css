@@ -478,21 +478,137 @@
 }
 
 .character-avatar.blues {
-    background: linear-gradient(135deg, #4169E1, #1E3A8A);
+    background: transparent;
+    position: relative;
+    animation: bluesHover 3s ease-in-out infinite;
 }
 
+@keyframes bluesHover {
+    0%, 100% { 
+        transform: translateY(0px); 
+    }
+    50% { 
+        transform: translateY(-2px); 
+    }
+}
+
+/* The Blues - Three Birds Design */
 .character-avatar.blues::before {
-    /* Light blue belly */
+    /* Center bird */
     content: '';
     position: absolute;
-    bottom: 15px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 42px;  /* Increased from 35px to 42px */
+    height: 42px; /* Increased from 35px to 42px */
+    background: linear-gradient(135deg, #4A90E2, #1E3A8A);
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    z-index: 3;
+}
+
+.character-avatar.blues::after {
+    /* Left and right birds - closer together */
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 36px;  /* Increased from 30px to 36px */
+    height: 36px; /* Increased from 30px to 36px */
+    background: linear-gradient(135deg, #4A90E2, #1E3A8A);
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 
+        0 2px 6px rgba(0, 0, 0, 0.15),
+        /* Left bird */
+        -42px 0 0 0 #4A90E2,      /* Adjusted from -35px to -42px */
+        -42px 0 0 2px white,
+        -42px 2px 6px 0 rgba(0, 0, 0, 0.15),
+        /* Right bird */
+        42px 0 0 0 #4A90E2,       /* Adjusted from 35px to 42px */
+        42px 0 0 2px white,
+        42px 2px 6px 0 rgba(0, 0, 0, 0.15);
+    z-index: 2;
+}
+
+/* Blues Eyes and Beaks */
+.character-avatar.blues .blues-eyes {
+    position: absolute;
+    top: 43%;
     left: 50%;
     transform: translateX(-50%);
-    width: 50px;
-    height: 35px;
-    background: #E6F3FF;
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 6px;
+    height: 6px;
+    background: white;
+    border: 1px solid #000;
+    border-radius: 50%;
+    z-index: 4;
+    animation: bluesEyeBlink 4s infinite;
+    /* Second eye for center bird */
+    box-shadow: 
+        8px 0 0 0 white, 
+        8px 0 0 1px #000,
+        /* Left bird eyes - adjusted for larger size */
+        -42px 0 0 0 white,  /* Changed from -35px to -42px */
+        -34px 0 0 0 white,  /* Changed from -27px to -34px */
+        -42px 0 0 1px #000,
+        -34px 0 0 1px #000,
+        /* Right bird eyes - adjusted for larger size */
+        42px 0 0 0 white,   /* Changed from 35px to 42px */
+        50px 0 0 0 white,   /* Changed from 43px to 50px */
+        42px 0 0 1px #000,
+        50px 0 0 1px #000;
+}
+
+.character-avatar.blues .blues-eyes::after {
+    /* Pupils for all birds */
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 2px;
+    height: 2px;
+    background: #000;
+    border-radius: 50%;
+    box-shadow: 
+        /* Center bird pupils */
+        8px 0 0 0 #000,
+        /* Left bird pupils - adjusted for larger size */
+        -42px 0 0 0 #000,   /* Changed from -35px to -42px */
+        -34px 0 0 0 #000,   /* Changed from -27px to -34px */
+        /* Right bird pupils - adjusted for larger size */
+        42px 0 0 0 #000,    /* Changed from 35px to 42px */
+        50px 0 0 0 #000;    /* Changed from 43px to 50px */
+}
+
+.character-avatar.blues .blues-beaks {
+    position: absolute;
+    top: 52%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 4px;
+    background: #FFA500;
+    border-radius: 50% 50% 60% 60% / 60% 60% 40% 40%;
+    z-index: 4;
+    /* All three beaks - adjusted for larger size */
+    box-shadow: 
+        /* Left bird beak */
+        -42px 0 0 0 #FFA500,  /* Changed from -35px to -42px */
+        /* Right bird beak */
+        42px 0 0 0 #FFA500;   /* Changed from 35px to 42px */
+}
+
+@keyframes bluesEyeBlink {
+    0%, 90%, 100% { 
+        transform: scaleY(1); 
+    }
+    95% { 
+        transform: scaleY(0.1); 
+    }
 }
 
 .character-avatar.matilda {
@@ -613,7 +729,48 @@
 }
 
 .bird-visual-blues {
-    background: linear-gradient(135deg, #4169E1, #1E3A8A);
+    background: transparent;
+    position: relative;
+}
+
+/* The Blues - Three Birds Visual for Carousel */
+.bird-visual-blues::before {
+    /* Center bird - made much bigger, no border */
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 55px;  /* Increased from 45px to 55px */
+    height: 55px; /* Increased from 45px to 55px */
+    background: linear-gradient(135deg, #4A90E2, #1E3A8A);
+    border-radius: 50%;
+    border: none; /* Removed white border */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    z-index: 3;
+}
+
+.bird-visual-blues::after {
+    /* Left and right birds - made much bigger, no borders, adjusted positioning */
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 48px;  /* Increased from 38px to 48px */
+    height: 48px; /* Increased from 38px to 48px */
+    background: linear-gradient(135deg, #4A90E2, #1E3A8A);
+    border-radius: 50%;
+    border: none; /* Removed white border */
+    box-shadow: 
+        0 3px 6px rgba(0, 0, 0, 0.2),
+        /* Left bird - adjusted position for much bigger size, no border */
+        -45px 0 0 0 #4A90E2,      /* Moved from -40px to -45px */
+        -45px 3px 6px 0 rgba(0, 0, 0, 0.2),
+        /* Right bird - adjusted position for much bigger size, no border */
+        45px 0 0 0 #4A90E2,       /* Moved from 40px to 45px */
+        45px 3px 6px 0 rgba(0, 0, 0, 0.2);
+    z-index: 2;
 }
 
 .bird-visual-matilda {
@@ -668,19 +825,7 @@
         inset 0 -2px 4px rgba(0, 0, 0, 0.4);
 }
 
-.bird-visual-blues::before {
-    /* Light blue belly */
-    content: '';
-    position: absolute;
-    bottom: 8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 35px;
-    height: 25px;
-    background: #E6F3FF;
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+
 
 .bird-visual-matilda::before {
     /* Snow white belly */
@@ -848,19 +993,39 @@
 }
 
 .bird-visual-blues {
-    background: linear-gradient(135deg, #4A90E2, #0066CC);
+    background: transparent;
+    position: relative;
 }
 
 .bird-visual-blues::before {
+    /* Center bird with simple eyes */
     content: '';
     position: absolute;
-    top: 25px;
-    left: 25px;
-    width: 6px;
-    height: 6px;
-    background: #333;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, #4A90E2, #1E3A8A);
     border-radius: 50%;
-    box-shadow: 8px 0 0 #333, 16px 0 0 #333;
+    border: 1px solid white;
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.2),
+        /* Left and right birds */
+        -18px 0 0 0 #4A90E2,
+        -18px 0 0 1px white,
+        -18px 2px 4px 0 rgba(0, 0, 0, 0.15),
+        18px 0 0 0 #4A90E2,
+        18px 0 0 1px white,
+        18px 2px 4px 0 rgba(0, 0, 0, 0.15),
+        /* Simple eyes for all three birds */
+        -2px -4px 0 -8px white,
+        2px -4px 0 -8px white,
+        -20px -4px 0 -8px white,
+        -16px -4px 0 -8px white,
+        16px -4px 0 -8px white,
+        20px -4px 0 -8px white;
+    z-index: 3;
 }
 
 .bird-visual-matilda {

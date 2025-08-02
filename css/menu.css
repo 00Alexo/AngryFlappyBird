@@ -363,6 +363,81 @@
     }
 }
 
+/* Special styling for Blues - single bird in main menu */
+.selected-bird-avatar.blues {
+    background: linear-gradient(135deg, #4A90E2, #1E3A8A);
+    border: 3px solid white;
+    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+    position: relative;
+}
+
+/* Add pupils as small elements on the main blues container */
+.selected-bird-avatar.blues:before {
+    /* Blue bird eyes with pupils always visible */
+    content: '';
+    position: absolute;
+    top: 32%;
+    left: 28%;
+    width: 14px;
+    height: 14px;
+    background: #FFFFFF;
+    border: 2px solid #000;
+    border-radius: 50%;
+    box-shadow: 
+        20px 0 0 0 #FFFFFF, 
+        20px 0 0 2px #000,
+        /* Black pupils centered in each eye */
+        4px 4px 0 -6px #000000,
+        24px 4px 0 -6px #000000;
+    z-index: 3;
+}
+
+.selected-bird-avatar.blues:after {
+    /* Single blue bird beak */
+    content: '';
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 6px;
+    background: #FFA500;
+    border-radius: 50% 50% 60% 60% / 60% 60% 40% 40%;
+    z-index: 2;
+}
+
+/* Pupils using a creative approach - add after all other elements */
+.selected-bird-avatar.blues {
+    background: 
+        /* Two small black circles for pupils */
+        radial-gradient(circle at 36% 45%, #000 2px, transparent 3px),
+        radial-gradient(circle at 64% 45%, #000 2px, transparent 3px),
+        /* Main blue gradient */
+        linear-gradient(135deg, #4A90E2, #1E3A8A);
+    border: 3px solid white;
+    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+    position: relative;
+}
+
+.selected-bird-avatar.blues::after {
+    /* Single blue bird beak */
+    content: '';
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 6px;
+    background: #FFA500;
+    border-radius: 50% 50% 60% 60% / 60% 60% 40% 40%;
+    z-index: 2;
+}
+
+.selected-bird-avatar.blues:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 35px rgba(74, 144, 226, 0.6);
+}
+
 /* Menu Bird Visual Styles */
 .selected-bird-avatar .bird-visual-red {
     position: relative;
@@ -401,9 +476,8 @@
     box-shadow: 30px 0 0 #2F1B14;
 }
 
-/* Eyes for all birds in main menu */
+/* Eyes for all birds in main menu (excluding blues) */
 .selected-bird-avatar .bird-visual-red .eye,
-.selected-bird-avatar .bird-visual-blues .eye,
 .selected-bird-avatar .bird-visual-matilda .eye,
 .selected-bird-avatar .bird-visual-stella .eye {
     position: absolute;
@@ -430,9 +504,8 @@
     box-shadow: 20px 0 0 #FFFFFF, 20px 0 0 2px #2F1B14;
 }
 
-/* Beaks for all birds in main menu */
+/* Beaks for all birds in main menu (excluding blues) */
 .selected-bird-avatar .bird-visual-red .beak,
-.selected-bird-avatar .bird-visual-blues .beak,
 .selected-bird-avatar .bird-visual-matilda .beak,
 .selected-bird-avatar .bird-visual-stella .beak {
     position: absolute;
@@ -648,20 +721,18 @@
     position: relative;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle at 30% 30%, #87CEEB, #4A90E2);
+    background: transparent; /* Let the main container handle the background */
     border-radius: 50%;
 }
 
 .selected-bird-avatar .bird-visual-blues::before {
-    content: '';
-    position: absolute;
-    top: 30px;
-    left: 28px;
-    width: 6px;
-    height: 6px;
-    background: #333;
-    border-radius: 50%;
-    box-shadow: 8px 0 0 #333, 16px 0 0 #333;
+    /* Remove eyes - handled by main container */
+    display: none;
+}
+
+.selected-bird-avatar .bird-visual-blues::after {
+    /* Remove beak - handled by main container */
+    display: none;
 }
 
 .selected-bird-avatar .bird-visual-matilda {
@@ -1038,6 +1109,39 @@
         0 0 20px rgba(255, 0, 0, 1),
         0 0 30px rgba(255, 69, 0, 0.8),
         inset -1px 0 2px rgba(0, 0, 0, 0.4);
+}
+
+/* Blues Carousel - No Background Override and No Golden Glow */
+.carousel-character .character-avatar.blues {
+    background: transparent;
+}
+
+.carousel-character.blues {
+    background: transparent;
+    border-color: rgba(135, 206, 235, 0.6);
+}
+
+.carousel-character.blues:hover {
+    border-color: #4A90E2;
+    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+}
+
+/* Remove golden glow when Blues are current character */
+.carousel-character.blues.current {
+    border-color: #4A90E2 !important;
+    box-shadow: 0 8px 30px rgba(74, 144, 226, 0.6) !important;
+    animation: bluesCurrentGlow 2s ease-in-out infinite !important;
+}
+
+@keyframes bluesCurrentGlow {
+    0%, 100% { 
+        box-shadow: 0 8px 30px rgba(74, 144, 226, 0.6);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 12px 40px rgba(74, 144, 226, 0.8);
+        transform: scale(1.1);
+    }
 }
 
 .carousel-character:nth-child(1) { animation-delay: 0s; }

@@ -77,6 +77,12 @@ export class CharacterUI {
                 <div class="eye"></div>
                 <div class="beak"></div>
             `;
+        } else if (character.id === 'blues') {
+            // The Blues - Three birds with eyes and beaks
+            avatarContent = `
+                <div class="blues-eyes"></div>
+                <div class="blues-beaks"></div>
+            `;
         } else {
             // All other characters get standard eyes and beak
             avatarContent = `
@@ -363,12 +369,12 @@ export class CharacterUI {
                 tips: ["Stay tuned for Bomb's explosive ability!"]
             },
             blues: {
-                description: "The Blues' triple split ability - coming soon!",
+                description: "Jim, Jake & Jay's triple split ability - coming soon!",
                 duration: "Coming soon",
                 cooldown: "Coming soon", 
                 activation: "Coming soon",
-                effects: ["🔵 Not yet implemented"],
-                tips: ["Stay tuned for The Blues' split ability!"]
+                effects: ["🔵🔵🔵 Three times the power - not yet implemented"],
+                tips: ["Stay tuned for The Blues' triple split ability!"]
             },
             matilda: {
                 description: "Matilda's unique resurrection ability! When she dies, two pipes ahead fall down and an egg drops from the sky to respawn her. This ability can only be used once per life.",

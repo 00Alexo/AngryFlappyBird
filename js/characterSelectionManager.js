@@ -67,6 +67,12 @@ export class CharacterCarouselManager {
                     <div class="chuck-triangle-beak"></div>
                     <div class="chuck-triangle-eyebrow"></div>
                 `;
+            } else if (character.id === 'blues') {
+                // The Blues - Three birds with eyes and beaks
+                avatarContent = `
+                    <div class="blues-eyes"></div>
+                    <div class="blues-beaks"></div>
+                `;
             } else {
                 // All other characters get standard eyes and beak
                 avatarContent = `
