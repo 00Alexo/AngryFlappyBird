@@ -173,16 +173,14 @@ export class MenuManager {
             const birdVisual = document.createElement('div');
             birdVisual.className = `bird-visual-${character.id}`;
             
-            // Special handling for Red's visual elements
-            if (character.id === 'red') {
-                const eye = document.createElement('div');
-                eye.className = 'eye';
-                birdVisual.appendChild(eye);
-                
-                const beak = document.createElement('div');
-                beak.className = 'beak';
-                birdVisual.appendChild(beak);
-            }
+            // Add eyes and beak to all characters
+            const eye = document.createElement('div');
+            eye.className = 'eye';
+            birdVisual.appendChild(eye);
+            
+            const beak = document.createElement('div');
+            beak.className = 'beak';
+            birdVisual.appendChild(beak);
             
             birdAvatar.appendChild(birdVisual);
             

@@ -243,9 +243,9 @@
 }
 
 .character-avatar.red {
-    background: linear-gradient(135deg, #FF4444, #CC0000);
+    background: linear-gradient(135deg, #DC143C, #8B0000);
     position: relative;
-    box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.3);
 }
 
 .character-avatar.red::before {
@@ -257,7 +257,7 @@
     transform: translateX(-50%);
     width: 60px;
     height: 40px;
-    background: #FFFFFF;
+    background: #F5F5F5;
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -270,11 +270,14 @@
     left: 25px;
     width: 20px;
     height: 6px;
-    background: #333;
+    background: #2F1B14;
     border-radius: 3px;
     transform: rotate(-15deg);
-    box-shadow: 30px 0 0 #333;
+    box-shadow: 30px 0 0 #2F1B14;
 }
+
+/* Red's angry eyebrows */
+/* (Now handled by ::after pseudo-element above) */
 
 /* Red's eyes in avatar */
 .character-avatar.red .eye {
@@ -285,8 +288,8 @@
     height: 12px;
     background: #FFFFFF;
     border-radius: 50%;
-    border: 3px solid #333;
-    box-shadow: 26px 0 0 #FFFFFF, 26px 0 0 3px #333;
+    border: 3px solid #2F1B14;
+    box-shadow: 26px 0 0 #FFFFFF, 26px 0 0 3px #2F1B14;
 }
 
 /* Red's beak in avatar */
@@ -304,32 +307,150 @@
 }
 
 .character-avatar.chuck {
-    background: linear-gradient(135deg, #FFD700, #FFA500);
+    background: linear-gradient(135deg, #FFA500, #FF8C00);
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    border-radius: 0; /* Remove circular border radius for triangle */
+}
+
+.character-avatar.chuck::before {
+    /* Light yellow triangular belly */
+    content: '';
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 25px;
+    background: #FFFF99;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Chuck's eyes in avatar - positioned for triangle shape */
+.character-avatar.chuck .eye {
+    position: absolute;
+    top: 32px;
+    left: 30px;
+    width: 10px;
+    height: 10px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    border: 2px solid #2F1B14;
+    box-shadow: 20px 0 0 #FFFFFF, 20px 0 0 2px #2F1B14;
+}
+
+/* Chuck's beak in avatar - positioned for triangle shape */
+.character-avatar.chuck .beak {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 10px solid #FFA500;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
 }
 
 .character-avatar.bomb {
-    background: linear-gradient(135deg, #333333, #000000);
+    background: linear-gradient(135deg, #2F2F2F, #1C1C1C);
+}
+
+.character-avatar.bomb::before {
+    /* Gray belly */
+    content: '';
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 35px;
+    background: #404040;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.character-avatar.bomb::after {
+    /* Fuse */
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 12px;
+    background: #8B4513;
+    border-radius: 2px;
 }
 
 .character-avatar.blues {
-    background: linear-gradient(135deg, #4A90E2, #0066CC);
+    background: linear-gradient(135deg, #4169E1, #1E3A8A);
 }
 
-.character-avatar.hal {
-    background: linear-gradient(135deg, #4CAF50, #2E7D32);
-}
-
-.character-avatar.terence {
-    background: linear-gradient(135deg, #8B0000, #660000);
+.character-avatar.blues::before {
+    /* Light blue belly */
+    content: '';
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 35px;
+    background: #E6F3FF;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .character-avatar.matilda {
-    background: linear-gradient(135deg, #FFFFFF, #E0E0E0);
+    background: linear-gradient(135deg, #F8F8FF, #DCDCDC);
     color: #333;
 }
 
+.character-avatar.matilda::before {
+    /* Snow white belly */
+    content: '';
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 35px;
+    background: #FFFAFA;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.character-avatar.matilda::after {
+    /* Brown head crest */
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 12px solid #D2691E;
+}
+
 .character-avatar.stella {
-    background: linear-gradient(135deg, #FF69B4, #FF1493);
+    background: linear-gradient(135deg, #FF1493, #DC143C);
+}
+
+.character-avatar.stella::before {
+    /* Light coral belly */
+    content: '';
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 35px;
+    background: #FFCCCB;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .character-avatar.bubbles {
@@ -353,22 +474,10 @@
 
 /* Bird Visual Elements for Character Screen */
 .bird-visual-red,
-.bird-visual-chuck,
 .bird-visual-bomb,
 .bird-visual-blues,
-.bird-visual-matilda {
-    position: relative;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-}
-
-.bird-visual-red {
-    background: linear-gradient(135deg, #FF4444, #CC0000);
+.bird-visual-matilda,
+.bird-visual-stella {
     position: relative;
     width: 60px;
     height: 60px;
@@ -380,6 +489,44 @@
     box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.2);
 }
 
+/* Chuck gets special triangular treatment */
+.bird-visual-chuck {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: 0;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.3);
+}
+
+.bird-visual-red {
+    background: linear-gradient(135deg, #DC143C, #8B0000);
+}
+
+.bird-visual-chuck {
+    background: linear-gradient(135deg, #FFA500, #FF8C00);
+}
+
+.bird-visual-bomb {
+    background: linear-gradient(135deg, #2F2F2F, #1C1C1C);
+}
+
+.bird-visual-blues {
+    background: linear-gradient(135deg, #4169E1, #1E3A8A);
+}
+
+.bird-visual-matilda {
+    background: linear-gradient(135deg, #F8F8FF, #DCDCDC);
+}
+
+.bird-visual-stella {
+    background: linear-gradient(135deg, #FF1493, #DC143C);
+}
+
 .bird-visual-red::before {
     /* White belly */
     content: '';
@@ -389,7 +536,77 @@
     transform: translateX(-50%);
     width: 35px;
     height: 25px;
-    background: #FFFFFF;
+    background: #F5F5F5;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bird-visual-chuck::before {
+    /* Light yellow belly */
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 35px;
+    height: 25px;
+    background: #FFFF99;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bird-visual-bomb::before {
+    /* Gray belly */
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 35px;
+    height: 25px;
+    background: #404040;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.bird-visual-blues::before {
+    /* Light blue belly */
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 35px;
+    height: 25px;
+    background: #E6F3FF;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bird-visual-matilda::before {
+    /* Snow white belly */
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 35px;
+    height: 25px;
+    background: #FFFAFA;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bird-visual-stella::before {
+    /* Light coral belly */
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 35px;
+    height: 25px;
+    background: #FFCCCB;
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -402,10 +619,10 @@
     left: 15px;
     width: 12px;
     height: 4px;
-    background: #333;
+    background: #2F1B14;
     border-radius: 2px;
     transform: rotate(-15deg);
-    box-shadow: 18px 0 0 #333;
+    box-shadow: 18px 0 0 #2F1B14;
 }
 
 /* Red's eyes */
@@ -417,9 +634,11 @@
     height: 8px;
     background: #FFFFFF;
     border-radius: 50%;
-    border: 2px solid #333;
-    box-shadow: 16px 0 0 #FFFFFF, 16px 0 0 2px #333;
+    border: 2px solid #2F1B14;
+    box-shadow: 16px 0 0 #FFFFFF, 16px 0 0 2px #2F1B14;
 }
+
+/* Red's eyebrows - handled by ::after pseudo-element above */
 
 /* Red's beak */
 .bird-visual-red .beak {

@@ -268,7 +268,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #FF4444, #CC0000);
+    background: linear-gradient(135deg, #DC143C, #8B0000);
     border: 4px solid rgba(255, 255, 255, 0.8);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
     margin: 0 auto 8px;
@@ -297,14 +297,32 @@
     transform: scale(1.2) rotate(15deg);
 }
 
+/* Special styling for Chuck's triangular avatar */
+.selected-bird-avatar.chuck {
+    border-radius: 0;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    background: linear-gradient(135deg, #FF8C00, #FFA500);
+    border: 4px solid rgba(255, 215, 0, 0.8);
+    transform: rotate(0deg); /* Keep Chuck upright */
+}
+
+.selected-bird-avatar.chuck:hover {
+    transform: scale(1.2) rotate(5deg); /* Smaller rotation for triangle */
+}
+
+/* Remove the circular gleam effect for Chuck */
+.selected-bird-avatar.chuck::before {
+    display: none;
+}
+
 /* Menu Bird Visual Styles */
 .selected-bird-avatar .bird-visual-red {
     position: relative;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #FF4444, #CC0000);
+    background: linear-gradient(135deg, #DC143C, #8B0000);
     border-radius: 50%;
-    box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.3);
 }
 
 .selected-bird-avatar .bird-visual-red::before {
@@ -316,7 +334,7 @@
     transform: translateX(-50%);
     width: 60px;
     height: 40px;
-    background: #FFFFFF;
+    background: #F5F5F5;
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -329,14 +347,18 @@
     left: 25px;
     width: 20px;
     height: 6px;
-    background: #333;
+    background: #2F1B14;
     border-radius: 3px;
     transform: rotate(-15deg);
-    box-shadow: 30px 0 0 #333;
+    box-shadow: 30px 0 0 #2F1B14;
 }
 
-/* Red's eyes in main menu */
-.selected-bird-avatar .bird-visual-red .eye {
+/* Eyes for all birds in main menu */
+.selected-bird-avatar .bird-visual-red .eye,
+.selected-bird-avatar .bird-visual-bomb .eye,
+.selected-bird-avatar .bird-visual-blues .eye,
+.selected-bird-avatar .bird-visual-matilda .eye,
+.selected-bird-avatar .bird-visual-stella .eye {
     position: absolute;
     top: 38px;
     left: 32px;
@@ -344,12 +366,29 @@
     height: 12px;
     background: #FFFFFF;
     border-radius: 50%;
-    border: 3px solid #333;
-    box-shadow: 26px 0 0 #FFFFFF, 26px 0 0 3px #333;
+    border: 3px solid #2F1B14;
+    box-shadow: 26px 0 0 #FFFFFF, 26px 0 0 3px #2F1B14;
 }
 
-/* Red's beak in main menu */
-.selected-bird-avatar .bird-visual-red .beak {
+/* Chuck's eyes - positioned for triangle shape */
+.selected-bird-avatar .bird-visual-chuck .eye {
+    position: absolute;
+    top: 30px;
+    left: 28px;
+    width: 10px;
+    height: 10px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    border: 2px solid #2F1B14;
+    box-shadow: 20px 0 0 #FFFFFF, 20px 0 0 2px #2F1B14;
+}
+
+/* Beaks for all birds in main menu */
+.selected-bird-avatar .bird-visual-red .beak,
+.selected-bird-avatar .bird-visual-bomb .beak,
+.selected-bird-avatar .bird-visual-blues .beak,
+.selected-bird-avatar .bird-visual-matilda .beak,
+.selected-bird-avatar .bird-visual-stella .beak {
     position: absolute;
     bottom: 25px;
     left: 50%;
@@ -362,25 +401,58 @@
     filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
 }
 
+/* Chuck's beak - positioned for triangle shape */
+.selected-bird-avatar .bird-visual-chuck .beak {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 10px solid #FFA500;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+}
+
 .selected-bird-avatar .bird-visual-chuck {
     position: relative;
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #FFD700, #FFA500);
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #FF8C00, #FFA500);
     clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-    margin: 20px auto;
+    margin: 15px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .selected-bird-avatar .bird-visual-chuck::before {
+    /* Light yellow belly - triangular */
     content: '';
     position: absolute;
-    top: 25px;
-    left: 28px;
-    width: 8px;
-    height: 8px;
-    background: #333;
-    border-radius: 50%;
-    box-shadow: 8px 0 0 #333;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 30px;
+    background: #FFFF99;
+    clip-path: polygon(40% 0%, 0% 100%, 80% 100%);
+    border-radius: 8px;
+}
+
+.selected-bird-avatar .bird-visual-chuck::after {
+    /* Chuck's speed lines/eyebrows */
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 18px;
+    width: 15px;
+    height: 4px;
+    background: #2F1B14;
+    border-radius: 2px;
+    transform: rotate(-20deg);
+    box-shadow: 25px 5px 0 #2F1B14;
 }
 
 .selected-bird-avatar .bird-visual-bomb {
@@ -575,6 +647,191 @@
     transition: all 0.3s ease;
 }
 
+/* Character avatar within carousel */
+.carousel-character .character-avatar {
+    width: 100%;
+    height: 100%;
+    border: none;
+    margin: 0;
+    position: relative;
+}
+
+/* Special triangular styling for Chuck in carousel */
+.carousel-character .character-avatar.chuck {
+    border-radius: 0;
+    background: transparent;
+    position: relative;
+    overflow: visible;
+}
+
+/* Chuck's custom triangle body in carousel - LARGER */
+.carousel-character .character-avatar.chuck .chuck-triangle-body {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 85px solid transparent;
+    border-right: 85px solid transparent;
+    border-bottom: 150px solid #FFA500;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+/* Add gradient effect to Chuck's triangle using pseudo-element - LARGER */
+.carousel-character .character-avatar.chuck .chuck-triangle-body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -85px;
+    width: 0;
+    height: 0;
+    border-left: 85px solid transparent;
+    border-right: 85px solid transparent;
+    border-bottom: 150px solid #FF8C00;
+    background: linear-gradient(135deg, #FFD700, #FF8C00);
+    z-index: -1;
+}
+
+/* Chuck's triangular belly in carousel - LARGER */
+.carousel-character .character-avatar.chuck .chuck-triangle-belly {
+    position: absolute;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 45px solid transparent;
+    border-right: 45px solid transparent;
+    border-bottom: 50px solid #FFFF99;
+    z-index: 2;
+}
+
+/* Chuck's eyes in carousel - LARGER */
+.carousel-character .character-avatar.chuck .chuck-triangle-eyes {
+    position: absolute;
+    top: 45px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+}
+
+.carousel-character .character-avatar.chuck .chuck-triangle-eyes::before {
+    content: '';
+    position: absolute;
+    left: -25px;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    border: 3px solid #2F1B14;
+    box-shadow: 0 0 0 1px #FFFFFF inset;
+}
+
+.carousel-character .character-avatar.chuck .chuck-triangle-eyes::after {
+    content: '';
+    position: absolute;
+    right: -25px;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    border: 3px solid #2F1B14;
+    box-shadow: 0 0 0 1px #FFFFFF inset;
+}
+
+/* Chuck's pupils */
+.carousel-character .character-avatar.chuck .chuck-triangle-eyes::before {
+    background: radial-gradient(circle at 40% 30%, #FFFFFF 20%, #000000 25%, #000000 70%, #FFFFFF 75%);
+}
+
+.carousel-character .character-avatar.chuck .chuck-triangle-eyes::after {
+    background: radial-gradient(circle at 40% 30%, #FFFFFF 20%, #000000 25%, #000000 70%, #FFFFFF 75%);
+}
+
+/* Chuck's beak in carousel - LARGER */
+.carousel-character .character-avatar.chuck .chuck-triangle-beak {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 18px solid #FF4500;
+    z-index: 3;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* Chuck's angry eyebrow in carousel - LARGER */
+.carousel-character .character-avatar.chuck .chuck-triangle-eyebrow {
+    position: absolute;
+    top: 35px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+}
+
+.carousel-character .character-avatar.chuck .chuck-triangle-eyebrow::before {
+    content: '';
+    position: absolute;
+    left: -30px;
+    top: 0;
+    width: 18px;
+    height: 5px;
+    background: #B8860B;
+    border-radius: 2px;
+    transform: rotate(-20deg);
+}
+
+.carousel-character .character-avatar.chuck .chuck-triangle-eyebrow::after {
+    content: '';
+    position: absolute;
+    right: -30px;
+    top: 0;
+    width: 18px;
+    height: 5px;
+    background: #B8860B;
+    border-radius: 2px;
+    transform: rotate(20deg);
+}
+
+/* Make Chuck's carousel container triangular to match his shape */
+.carousel-character.chuck {
+    border-radius: 0;
+    clip-path: polygon(50% 5%, 5% 95%, 95% 95%);
+    border-color: rgba(255, 215, 0, 0.8);
+    background: linear-gradient(135deg, rgba(255, 165, 0, 0.2), rgba(255, 215, 0, 0.1));
+    overflow: visible;
+}
+
+/* Chuck gets a gentle floating animation */
+@keyframes carouselCharacterFloatTriangle {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(-1deg); }
+}
+
+.carousel-character.chuck {
+    animation: carouselCharacterFloatTriangle 4s ease-in-out infinite;
+}
+
+/* Chuck carousel hover effect - UPDATED FOR LARGER SIZE */
+.carousel-character.chuck:hover .chuck-triangle-body {
+    border-bottom-color: #FFD700;
+    transform: translateX(-50%) scale(1.02);
+}
+
+.carousel-character.chuck:hover .chuck-triangle-eyes::before,
+.carousel-character.chuck:hover .chuck-triangle-eyes::after {
+    transform: scale(1.1);
+    border-color: #1F0A09;
+}
+
 .carousel-character:nth-child(1) { animation-delay: 0s; }
 .carousel-character:nth-child(2) { animation-delay: 0.8s; }
 .carousel-character:nth-child(3) { animation-delay: 1.6s; }
@@ -631,220 +888,11 @@
     }
 }
 
-/* Carousel Bird Styles - Bigger */
-.carousel-bird-red {
-    background: linear-gradient(135deg, #FF4444, #CC0000);
-    position: relative;
-    box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.2);
-}
-
-.carousel-bird-red::before {
-    /* White belly */
-    content: '';
-    position: absolute;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 40px;
-    background: #FFFFFF;
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.carousel-bird-red::after {
-    /* Angry eyebrows */
-    content: '';
-    position: absolute;
-    top: 30px;
-    left: 25px;
-    width: 20px;
-    height: 6px;
-    background: #333;
-    border-radius: 3px;
-    transform: rotate(-15deg);
-    box-shadow: 30px 0 0 #333;
-}
-
-/* Red's eyes in carousel */
-.carousel-bird-red .eye {
-    position: absolute;
-    top: 38px;
-    left: 32px;
-    width: 12px;
-    height: 12px;
-    background: #FFFFFF;
-    border-radius: 50%;
-    border: 3px solid #333;
-    box-shadow: 26px 0 0 #FFFFFF, 26px 0 0 3px #333;
-}
-
-/* Red's beak in carousel */
-.carousel-bird-red .beak {
-    position: absolute;
-    bottom: 25px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-top: 12px solid #FFA500;
-    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
-}
-
-.carousel-bird-chuck {
-    background: radial-gradient(circle at 30% 30%, #FFD700, #FFA500);
-    position: relative;
-    border-radius: 0;
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-}
-
-.carousel-bird-chuck::before {
-    content: '';
-    position: absolute;
-    top: 25px;
-    left: 40px;
-    width: 8px;
-    height: 8px;
-    background: #333;
-    border-radius: 50%;
-    box-shadow: 10px 0 0 #333;
-}
-
-.carousel-bird-bomb {
-    background: radial-gradient(circle at 30% 30%, #444, #000);
-    position: relative;
-}
-
-.carousel-bird-bomb::before {
-    content: '';
-    position: absolute;
-    top: 30px;
-    left: 30px;
-    width: 10px;
-    height: 10px;
-    background: #FF4444;
-    border-radius: 50%;
-    box-shadow: 18px 0 0 #FF4444;
-}
-
-.carousel-bird-bomb::after {
-    content: '';
-    position: absolute;
-    top: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 5px;
-    height: 15px;
-    background: #8B4513;
-    border-radius: 3px;
-}
-
-.carousel-bird-blues {
-    background: radial-gradient(circle at 30% 30%, #87CEEB, #4A90E2);
-    position: relative;
-}
-
-.carousel-bird-blues::before {
-    content: '';
-    position: absolute;
-    top: 30px;
-    left: 25px;
-    width: 6px;
-    height: 6px;
-    background: #333;
-    border-radius: 50%;
-    box-shadow: 10px 0 0 #333, 20px 0 0 #333;
-}
-
-.carousel-bird-matilda {
-    background: radial-gradient(circle at 30% 30%, #FFFFFF, #F0F0F0);
-    position: relative;
-}
-
-.carousel-bird-matilda::before {
-    content: '';
-    position: absolute;
-    top: 30px;
-    left: 30px;
-    width: 8px;
-    height: 8px;
-    background: #333;
-    border-radius: 50%;
-    box-shadow: 15px 0 0 #333;
-}
-
-.carousel-bird-matilda::after {
-    content: '';
-    position: absolute;
-    top: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 12px solid transparent;
-    border-right: 12px solid transparent;
-    border-bottom: 18px solid #8B4513;
-}
-
-.carousel-bird-stella {
-    background: radial-gradient(circle at 30% 30%, #FFB6C1, #FF69B4);
-    position: relative;
-}
-
-.carousel-bird-stella::before {
-    /* Pink bubble */
-    content: '';
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    width: 40px;
-    height: 40px;
-    background: radial-gradient(circle, #FFD1DC 60%, #FFB6C1 100%);
-    border-radius: 50%;
-    opacity: 0.8;
-    box-shadow: 0 0 15px 5px rgba(255, 209, 220, 0.6);
-}
-
-.carousel-bird-stella::after {
-    /* Eyes */
-    content: '';
-    position: absolute;
-    top: 30px;
-    left: 30px;
-    width: 8px;
-    height: 8px;
-    background: #333;
-    border-radius: 50%;
-    box-shadow: 14px 0 0 #333;
-}
-
-.carousel-bird-stella .bubble {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 60px;
-    height: 60px;
-    background: radial-gradient(circle, #FFD1DC 60%, #FFB6C1 100%);
-    border-radius: 50%;
-    opacity: 0.7;
-    box-shadow: 0 0 15px 5px rgba(255, 209, 220, 0.5);
-    z-index: 1;
-}
-
-.carousel-bird-stella .stella-eye {
-    position: absolute;
-    top: 35px;
-    left: 35px;
-    width: 10px;
-    height: 10px;
-    background: white;
-    border-radius: 50%;
-    border: 2px solid #333;
-    z-index: 2;
-    box-shadow: 15px 0 0 white, 15px 0 0 2px #333;
-}
+/* Carousel Bird Styles - DEPRECATED: Now using unified character-avatar system */
+/* 
+   The carousel now uses the same character-avatar classes as the character selection screen
+   for consistent styling across all UI elements
+*/
 
 /* Character Gallery Section - Removed (replaced with character selection panel) */
 

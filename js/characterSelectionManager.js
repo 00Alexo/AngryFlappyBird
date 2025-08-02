@@ -38,10 +38,7 @@ export class CharacterCarouselManager {
         
         doubleCharacters.forEach(character => {
             const characterElement = document.createElement('div');
-            characterElement.className = 'carousel-character';
-            
-            // Add character-specific styling
-            characterElement.classList.add(`carousel-bird-${character.id}`);
+            characterElement.className = `carousel-character ${character.id}`;
             
             // Mark current character
             if (character.id === currentCharacter.id) {
@@ -52,24 +49,37 @@ export class CharacterCarouselManager {
             if (!character.owned) {
                 characterElement.classList.add('locked');
             }
-            let birdVisualContent = `<div class="carousel-bird-visual"></div>`;
-            if (character.id === 'red') {
-                birdVisualContent = `
-                    <div class="carousel-bird-visual">
-                        <div class="eye"></div>
-                        <div class="beak"></div>
-                    </div>
+            
+            // Create the same structure as character selection screen
+            let avatarContent = '';
+            if (character.id === 'stella') {
+                avatarContent = `
+                    <div class="bubble"></div>
+                    <div class="eye"></div>
+                    <div class="beak"></div>
                 `;
-            } else if (character.id === 'stella') {
-                birdVisualContent = `
-                    <div class="carousel-bird-visual">
-                        <div class="bubble"></div>
-                        <div class="stella-eye"></div>
-                    </div>
+            } else if (character.id === 'chuck') {
+                // Special triangular Chuck with custom positioned elements
+                avatarContent = `
+                    <div class="chuck-triangle-body"></div>
+                    <div class="chuck-triangle-belly"></div>
+                    <div class="chuck-triangle-eyes"></div>
+                    <div class="chuck-triangle-beak"></div>
+                    <div class="chuck-triangle-eyebrow"></div>
+                `;
+            } else {
+                // All other characters get standard eyes and beak
+                avatarContent = `
+                    <div class="eye"></div>
+                    <div class="beak"></div>
                 `;
             }
-
-            characterElement.innerHTML = birdVisualContent;
+            
+            characterElement.innerHTML = `
+                <div class="character-avatar ${character.id}">
+                    ${avatarContent}
+                </div>
+            `;
 
             this.carouselTrack.appendChild(characterElement);
         });

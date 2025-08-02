@@ -15,11 +15,13 @@ export class CharacterManager {
                     special: 'Bubble Shield'
                 },
                 colors: {
-                    body: '#FFB6C1',
-                    secondary: '#FF69B4',
-                    accent: '#FFD1DC',
-                    beak: '#FFD700',
-                    eyebrow: '#C71585'
+                    body: '#FF1493',        // Deep pink
+                    secondary: '#DC143C',   // Crimson for shadows
+                    accent: '#FFB6C1',      // Light pink for highlights
+                    beak: '#FFA500',       // Orange beak
+                    eyebrow: '#8B008B',    // Dark magenta for eyebrows
+                    belly: '#FFCCCB',      // Light coral belly
+                    bubble: '#FFE4E1'      // Misty rose for bubbles
                 }
             },
             red: {
@@ -35,17 +37,18 @@ export class CharacterManager {
                     special: 'Rage Mode'
                 },
                 colors: {
-                    body: '#FF4444',
-                    secondary: '#CC0000',
-                    accent: '#FFAA00',
-                    beak: '#FFA500',
-                    eyebrow: '#8B0000'
+                    body: '#DC143C',        // Deeper, darker red (Crimson)
+                    secondary: '#8B0000',   // Very dark red for shadows
+                    accent: '#FF6347',      // Tomato red for highlights
+                    beak: '#FFA500',       // Orange beak
+                    eyebrow: '#2F1B14',    // Very dark brown/black for angry eyebrows
+                    belly: '#F5F5F5'       // Off-white for belly
                 }
             },
             chuck: {
                 id: 'chuck',
                 name: 'Chuck',
-                description: 'The triangular yellow speedster',
+                description: 'The lightning-fast triangular speedster',
                 price: 100,
                 owned: false,
                 stats: {
@@ -55,11 +58,12 @@ export class CharacterManager {
                     special: 'Triangle Dash'
                 },
                 colors: {
-                    body: '#FFD700',
-                    secondary: '#FFA500',
-                    accent: '#FFFF99',
-                    beak: '#FF8C00',
-                    eyebrow: '#B8860B'
+                    body: '#FFA500',        // Darker orange-yellow
+                    secondary: '#FF8C00',   // Dark orange for shadows
+                    accent: '#FFD700',      // Gold for highlights
+                    beak: '#FF4500',       // Orange-red beak
+                    eyebrow: '#B8860B',    // Dark goldenrod for eyebrows
+                    belly: '#FFFF99'       // Light yellow belly
                 }
             },
             bomb: {
@@ -75,11 +79,13 @@ export class CharacterManager {
                     special: 'Explosion'
                 },
                 colors: {
-                    body: '#333333',
-                    secondary: '#000000',
-                    accent: '#FF4444',
-                    beak: '#FFA500',
-                    eyebrow: '#8B0000'
+                    body: '#2F2F2F',        // Dark gray instead of pure black
+                    secondary: '#1C1C1C',   // Very dark gray for shadows
+                    accent: '#FF6B35',      // Orange-red for fuse and accents
+                    beak: '#FFA500',       // Orange beak
+                    eyebrow: '#0D0D0D',    // Almost black for eyebrows
+                    fuse: '#8B4513',       // Brown fuse
+                    belly: '#404040'       // Slightly lighter gray belly
                 }
             },
             blues: {
@@ -95,11 +101,12 @@ export class CharacterManager {
                     special: 'Triple Split'
                 },
                 colors: {
-                    body: '#4A90E2',
-                    secondary: '#0066CC',
-                    accent: '#87CEEB',
-                    beak: '#FFA500',
-                    eyebrow: '#003366'
+                    body: '#4169E1',        // Royal blue
+                    secondary: '#1E3A8A',   // Dark blue for shadows
+                    accent: '#87CEEB',      // Sky blue for highlights
+                    beak: '#FFA500',       // Orange beak
+                    eyebrow: '#191970',    // Midnight blue for eyebrows
+                    belly: '#E6F3FF'       // Very light blue belly
                 }
             },
             matilda: {
@@ -115,11 +122,13 @@ export class CharacterManager {
                     special: 'Egg Bomb'
                 },
                 colors: {
-                    body: '#FFFFFF',
-                    secondary: '#E0E0E0',
-                    accent: '#FFD700',
-                    beak: '#FFA500',
-                    eyebrow: '#8B4513'
+                    body: '#F8F8FF',        // Ghost white
+                    secondary: '#DCDCDC',   // Gainsboro for shadows
+                    accent: '#FFD700',      // Gold for accents
+                    beak: '#FFA500',       // Orange beak
+                    eyebrow: '#8B4513',    // Saddle brown for eyebrows
+                    belly: '#FFFAFA',      // Snow white belly
+                    crest: '#D2691E'       // Chocolate brown for head crest
                 }
             }
         };

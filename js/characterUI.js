@@ -69,18 +69,19 @@ export class CharacterUI {
         const canBuy = this.characterManager.canBuyCharacter(character.id, playerCoins);
         const isSelected = character.id === selectedChar;
         
-        // Special handling for Red and Stella's visual elements
+        // Add visual elements (eyes and beak) for all characters
         let avatarContent = '';
-        if (character.id === 'red') {
+        if (character.id === 'stella') {
             avatarContent = `
+                <div class="bubble"></div>
                 <div class="eye"></div>
                 <div class="beak"></div>
             `;
-        } else if (character.id === 'stella') {
+        } else {
+            // All other characters get standard eyes and beak
             avatarContent = `
-                <div class="bubble"></div>
-                <div class="eye stella-eye"></div>
-                <div class="beak stella-beak"></div>
+                <div class="eye"></div>
+                <div class="beak"></div>
             `;
         }
         
@@ -346,12 +347,12 @@ export class CharacterUI {
                 ]
             },
             chuck: {
-                description: "Chuck's lightning-fast speed ability - coming soon!",
+                description: "Chuck's triangular dash - cuts through the air with lightning speed!",
                 duration: "Coming soon",
                 cooldown: "Coming soon",
                 activation: "Coming soon",
-                effects: ["⚡ Not yet implemented"],
-                tips: ["Stay tuned for Chuck's speed ability!"]
+                effects: ["⚡ Triangular form for aerodynamic advantage", "💨 Not yet implemented"],
+                tips: ["Stay tuned for Chuck's triangular speed ability!"]
             },
             bomb: {
                 description: "Bomb's explosive ability - coming soon!",
