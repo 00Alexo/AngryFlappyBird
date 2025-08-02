@@ -406,8 +406,13 @@ export class Renderer {
         // Draw bird trail
         bird.drawTrail(this.ctx);
         
-        // Draw bird (will be hidden if not visible)
-        bird.draw(this.ctx);
+        // Check if we need to render multiple Blues birds
+        if (abilityManager && abilityManager.isBluesActive()) {
+            this.renderBluesBirds(bird, abilityManager);
+        } else {
+            // Draw single bird (will be hidden if not visible)
+            bird.draw(this.ctx);
+        }
         
         // Draw particles
         particleSystem.draw(this.ctx);
@@ -416,5 +421,100 @@ export class Renderer {
         if (abilityManager) {
             abilityManager.renderEggBomb(this.ctx);
         }
+    }
+    
+    renderBluesBirds(bird, abilityManager) {
+        const birdCount = abilityManager.getBluesBirdCount();
+        const spacing = 35; // Increased distance between birds
+        
+        // Draw birds in formation (back to front for proper layering)
+        for (let i = birdCount - 1; i >= 0; i--) {
+            this.ctx.save();
+            
+            // Position birds in a diagonal formation behind each other
+            let offsetX = 0;
+            let offsetY = 0;
+            
+            if (birdCount > 1) {
+                if (i === 0) {
+                    // Lead bird (main position)
+                    offsetX = 0;
+                    offsetY = 0;
+                } else if (i === 1) {
+                    // Second bird behind and slightly below
+                    offsetX = -spacing;
+                    offsetY = spacing * 0.7;
+                } else if (i === 2) {
+                    // Third bird further behind and above the second
+                    offsetX = -spacing * 1.8;
+                    offsetY = -spacing * 0.3;
+                }
+            }
+            
+            // Translate to bird position with offset
+            this.ctx.translate(bird.x + offsetX, bird.y + offsetY);
+            this.ctx.rotate(bird.rotation);
+            
+            // Draw blue bird with slight transparency for birds in back
+            const alpha = i === 0 ? 1.0 : 0.85; // Front bird fully opaque, others slightly transparent
+            this.ctx.globalAlpha = alpha;
+            
+            // Draw blue bird
+            this.drawBluesBird(this.ctx, i);
+            
+            this.ctx.restore();
+        }
+    }
+    
+    drawBluesBird(ctx, birdIndex) {
+        const BIRD_SIZE = 40; // Match the bird size from constants
+        const colors = {
+            body: '#4A90E2',        // Bright blue
+            secondary: '#1E3A8A',   // Dark blue for shadows
+            accent: '#60A5FA'       // Light blue for highlights
+        };
+        
+        // Scale birds in back to be smaller for depth effect
+        const scale = 1 - (birdIndex * 0.08); // Each bird behind gets progressively smaller
+        ctx.scale(scale, scale);
+        
+        // Draw body
+        ctx.fillStyle = colors.body;
+        ctx.beginPath();
+        ctx.arc(0, 0, BIRD_SIZE/2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw shadow/shading
+        ctx.fillStyle = colors.secondary;
+        ctx.beginPath();
+        ctx.arc(2, 2, BIRD_SIZE/2 - 3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw highlight
+        ctx.fillStyle = colors.accent;
+        ctx.beginPath();
+        ctx.arc(-3, -3, BIRD_SIZE/4, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw eye
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(-5, -5, 8, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw pupil
+        ctx.fillStyle = 'black';
+        ctx.beginPath();
+        ctx.arc(-3, -3, 4, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw beak
+        ctx.fillStyle = '#FFA500';
+        ctx.beginPath();
+        ctx.moveTo(12, 0);
+        ctx.lineTo(22, -3);
+        ctx.lineTo(22, 3);
+        ctx.closePath();
+        ctx.fill();
     }
 }

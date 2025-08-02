@@ -78,6 +78,9 @@ export class Game {
         // Show ability timer when game starts
         this.abilityManager.updateCooldownDisplay();
         
+        // Initialize Blues ability if playing as Blues
+        this.abilityManager.initializeBluesAbility();
+        
         // Start game loop
         if (this.gameLoop) clearInterval(this.gameLoop);
         this.gameLoop = setInterval(() => this.update(), 1000 / 60);
@@ -184,6 +187,22 @@ export class Game {
                 // Trigger ability end on pipe hit
                 this.abilityManager.onPipeHit();
             }
+        } else if (this.abilityManager.isBluesActive()) {
+            // Blues collision: destroy pipe and lose one bird
+            if (this.pipeManager.checkAndSmashCollisions(this.bird)) {
+                console.log('🔵 Blues hit pipe! Bird lost, pipe destroyed');
+                // Add smash effect
+                this.particleSystem.addExplosionParticles(this.bird.x, this.bird.y);
+                // Lose one bird
+                const shouldEndGame = this.abilityManager.onBluesBirdDeath();
+                if (shouldEndGame) {
+                    this.gameOver();
+                    return;
+                } else {
+                    // Reset bird position but continue game
+                    this.bird.reset(this.canvas.width * 0.2, this.canvas.height / 2);
+                }
+            }
         } else {
             // Normal collision detection
             if (this.pipeManager.checkCollisions(this.bird)) {
@@ -194,13 +213,21 @@ export class Game {
 
         // Check scoring
         if (this.pipeManager.checkScoring(this.bird)) {
-            // Simple scoring - increment by 1 for all characters
-            this.gameState.incrementScore();
+            // Apply Blues' score multiplier if active
+            const scoreMultiplier = this.abilityManager.getBluesScoreMultiplier();
+            for (let i = 0; i < scoreMultiplier; i++) {
+                this.gameState.incrementScore();
+            }
             
-            // Add score particles
+            // Add score particles with appropriate feedback
             const scorePos = this.pipeManager.getScoreParticlePosition();
             if (scorePos) {
                 this.particleSystem.addScoreParticles(scorePos.x, scorePos.y);
+                
+                // Show Blues triple score feedback
+                if (scoreMultiplier > 1) {
+                    console.log(`🔵 Blues triple score! +${scoreMultiplier} points`);
+                }
             }
         }
 

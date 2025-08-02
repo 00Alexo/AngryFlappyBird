@@ -369,12 +369,22 @@ export class CharacterUI {
                 tips: ["Stay tuned for Bomb's explosive ability!"]
             },
             blues: {
-                description: "Jim, Jake & Jay's triple split ability - coming soon!",
-                duration: "Coming soon",
-                cooldown: "Coming soon", 
-                activation: "Coming soon",
-                effects: ["🔵🔵🔵 Three times the power - not yet implemented"],
-                tips: ["Stay tuned for The Blues' triple split ability!"]
+                description: "The Blues are three birds fighting together! Start with Jim, Jake, and Jay. When you hit a pipe, you destroy it but lose one bird. Lost birds respawn every 150 seconds. Score multiplier equals the number of alive birds!",
+                duration: "Passive - Always active",
+                cooldown: "Lost birds respawn every 150 seconds",
+                activation: "Always active - no manual trigger",
+                effects: [
+                    "🔵🔵🔵 Start with 3 birds (Jim, Jake, Jay)",
+                    "� Destroy pipes when hit (but lose a bird)",
+                    "� Score multiplier = number of alive birds (1x, 2x, or 3x)",
+                    "💀 Game over only when all 3 birds are lost"
+                ],
+                tips: [
+                    "You have 3 lives - each pipe hit costs one bird but destroys the pipe!",
+                    "With all 3 birds alive you get triple points per pipe passage!",
+                    "Use your extra lives strategically to power through difficult sections!",
+                    "The more birds alive, the higher your score multiplier!"
+                ]
             },
             matilda: {
                 description: "Matilda's unique resurrection ability! When she dies, two pipes ahead fall down and an egg drops from the sky to respawn her. This ability can only be used once per life.",

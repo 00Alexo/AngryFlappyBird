@@ -104,6 +104,13 @@ export class AbilityManager {
         this.freezeOverlay = null;
         this.frozenBirdVelocity = null;
         
+        // Blues' Triple Bird ability state
+        this.bluesBirdCount = 3; // Start with 3 birds (Jim, Jake, Jay)
+        this.bluesMaxBirds = 3; // Maximum 3 birds (Jim, Jake, Jay)
+        this.bluesSpawnInterval = 150000; // 150 seconds = 2.5 minutes
+        this.bluesLastSpawn = 0; // When the last bird was spawned
+        this.bluesGameStartTime = 0; // When the game started (for spawn timing)
+        
         this.setupEventListeners();
         console.log('AbilityManager initialized'); // Debug log
     }
@@ -163,6 +170,10 @@ export class AbilityManager {
             case 'red':
                 this.activateRageMode();
                 break;
+            case 'blues':
+                // Blues' ability is passive - no manual activation needed
+                console.log('The Blues\' triple bird ability is passive - manages bird count automatically');
+                return;
             case 'matilda':
                 // Matilda's ability is passive - only activated on death
                 console.log('Matilda\'s Egg Bomb is a passive ability - activates on death');
@@ -240,6 +251,9 @@ export class AbilityManager {
             }
         }
 
+        // Update Blues' triple bird system
+        this.updateBluesAbility();
+
         // Update cooldown timer display
         this.updateCooldownDisplay();
     }
@@ -284,6 +298,11 @@ export class AbilityManager {
     }
 
     updateCooldownDisplay() {
+        // If Blues is active, let the Blues display handle the timer
+        if (this.isBluesActive()) {
+            return;
+        }
+        
         const currentTime = Date.now();
         const timeSinceLastActivation = currentTime - this.lastActivation;
         const remainingCooldown = Math.max(0, this.cooldownDuration - timeSinceLastActivation);
@@ -820,6 +839,11 @@ export class AbilityManager {
         this.matildaLastDeath = 0;
         this.eggBomb = null;
         
+        // Reset Blues' ability
+        this.bluesBirdCount = 3;
+        this.bluesLastSpawn = 0;
+        this.bluesGameStartTime = 0;
+        
         // Unfreeze game if frozen
         if (this.gameFrozen) {
             this.unfreezeGame();
@@ -831,5 +855,129 @@ export class AbilityManager {
         this.hideDurationDisplay();
         
         console.log('Ability system reset'); // Debug log
+    }
+    
+    // Blues' Triple Bird System Methods
+    initializeBluesAbility() {
+        const character = this.game.characterUI.getCurrentCharacter();
+        if (character && character.id === 'blues') {
+            this.bluesBirdCount = 3; // Start with all 3 birds (Jim, Jake, Jay)
+            this.bluesGameStartTime = Date.now();
+            this.bluesLastSpawn = 0; // Don't start respawn timer until a bird is lost
+            console.log('🔵 Blues ability initialized - Starting with Jim, Jake, and Jay!');
+            
+            // Show the initial bird count display
+            this.updateBluesBirdCountDisplay();
+        }
+    }
+    
+    updateBluesAbility() {
+        const character = this.game.characterUI.getCurrentCharacter();
+        if (!character || character.id !== 'blues') return;
+        
+        const currentTime = Date.now();
+        
+        // Only check for respawn if we have lost birds AND the respawn timer has started
+        if (this.bluesBirdCount < this.bluesMaxBirds && this.bluesLastSpawn > 0) {
+            const timeSinceLastSpawn = currentTime - this.bluesLastSpawn;
+            
+            // Check if we should spawn a new bird
+            if (timeSinceLastSpawn >= this.bluesSpawnInterval) {
+                this.spawnNewBluesBird();
+            }
+        }
+        
+        // Update the display
+        this.updateBluesBirdCountDisplay();
+    }
+    
+    spawnNewBluesBird() {
+        if (this.bluesBirdCount >= this.bluesMaxBirds) return; // Safety check
+        
+        this.bluesBirdCount++;
+        this.bluesLastSpawn = Date.now();
+        
+        const birdNames = ['Jim', 'Jake', 'Jay'];
+        const newBirdName = birdNames[this.bluesBirdCount - 1];
+        
+        console.log(`🔵 New bird respawned: ${newBirdName}! Total birds: ${this.bluesBirdCount}`);
+        
+        // Show visual feedback
+        this.showAbilityActivation(`🔵 ${newBirdName} respawned! (${this.bluesBirdCount}/3 birds)`);
+        
+        // Add spawn particles
+        this.game.particleSystem.addExplosionParticles(
+            this.game.bird.x - 50, 
+            this.game.bird.y, 
+            '#4A90E2' // Blue color
+        );
+        
+        // Update display immediately
+        this.updateBluesBirdCountDisplay();
+    }
+    
+    onBluesBirdDeath() {
+        if (this.bluesBirdCount > 1) {
+            const birdNames = ['Jim', 'Jake', 'Jay'];
+            const lostBirdName = birdNames[this.bluesBirdCount - 1]; // The bird we're about to lose
+            
+            this.bluesBirdCount--;
+            
+            // Start the respawn timer only when we lose the first bird
+            if (this.bluesBirdCount === 2) {
+                this.bluesLastSpawn = Date.now(); // Reset spawn timer when first bird is lost
+            }
+            
+            console.log(`💔 Lost ${lostBirdName}! Remaining birds: ${this.bluesBirdCount}`);
+            
+            // Show feedback
+            this.showAbilityActivation(`💔 Lost ${lostBirdName}! ${this.bluesBirdCount} birds remaining`);
+            
+            // Update display immediately
+            this.updateBluesBirdCountDisplay();
+            
+            return false; // Don't end game yet
+        } else {
+            console.log('💔 Lost the last bird (Jim) - Game Over!');
+            return true; // End game
+        }
+    }
+    
+    getBluesBirdCount() {
+        return this.bluesBirdCount;
+    }
+    
+    isBluesActive() {
+        const character = this.game.characterUI.getCurrentCharacter();
+        return character && character.id === 'blues';
+    }
+    
+    getBluesScoreMultiplier() {
+        return this.isBluesActive() ? this.bluesBirdCount : 1;
+    }
+    
+    updateBluesBirdCountDisplay() {
+        if (!this.isBluesActive()) return;
+        
+        const abilityTimer = document.getElementById('abilityTimer');
+        const abilityCountdown = document.getElementById('abilityCountdown');
+        
+        if (abilityTimer && abilityCountdown) {
+            abilityTimer.style.display = 'block';
+            
+            const birdIcons = '🔵'.repeat(this.bluesBirdCount) + '💀'.repeat(3 - this.bluesBirdCount);
+            const birdNames = ['Jim', 'Jake', 'Jay'];
+            const aliveBirds = birdNames.slice(0, this.bluesBirdCount);
+            
+            // Show respawn timer only if we have lost birds AND the respawn timer has started
+            if (this.bluesBirdCount < this.bluesMaxBirds && this.bluesLastSpawn > 0) {
+                const timeUntilRespawn = this.bluesSpawnInterval - (Date.now() - this.bluesLastSpawn);
+                const secondsUntilRespawn = Math.max(0, Math.ceil(timeUntilRespawn / 1000));
+                
+                abilityCountdown.innerHTML = `${birdIcons}<br>${aliveBirds.join(', ')} (${this.bluesBirdCount}x score)<br>Respawn: ${secondsUntilRespawn}s`;
+            } else {
+                abilityCountdown.innerHTML = `${birdIcons}<br>${aliveBirds.join(', ')} (${this.bluesBirdCount}x score)`;
+            }
+        }
     }
 }
