@@ -611,55 +611,217 @@
     }
 }
 
+@keyframes stellaBubbleFloat {
+    0%, 100% { 
+        transform: translateY(0px) scale(1);
+        opacity: 0.7;
+    }
+    50% { 
+        transform: translateY(-3px) scale(1.1);
+        opacity: 0.9;
+    }
+}
+
 .character-avatar.matilda {
-    background: linear-gradient(135deg, #F8F8FF, #DCDCDC);
+    background: linear-gradient(135deg, #FFFFFF, #F5F5F5, #E8E8E8);
     color: #333;
+    position: relative;
+    box-shadow: 0 0 0 8px rgba(255,255,255,0.3), 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
 .character-avatar.matilda::before {
-    /* Snow white belly */
+    /* Enhanced white belly with subtle shading */
     content: '';
     position: absolute;
-    bottom: 15px;
+    bottom: 12px;
     left: 50%;
     transform: translateX(-50%);
-    width: 50px;
-    height: 35px;
-    background: #FFFAFA;
+    width: 60px;
+    height: 40px;
+    background: linear-gradient(135deg, #FFFFFF, #F8F8F8, #F0F0F0);
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1;
 }
 
 .character-avatar.matilda::after {
-    /* Brown head crest */
+    /* Enhanced brown/orange crest feathers */
     content: '';
     position: absolute;
-    top: 8px;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-bottom: 16px solid #D2691E;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    z-index: 2;
+}
+
+/* Matilda's eyes in avatar */
+.character-avatar.matilda .eye {
+    position: absolute;
+    top: 35px;
+    left: 30px;
+    width: 12px;
+    height: 12px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    border: 3px solid #2F1B14;
+    box-shadow: 24px 0 0 #FFFFFF, 24px 0 0 3px #2F1B14;
+    z-index: 3;
+}
+
+/* Matilda's pupils */
+.character-avatar.matilda .eye::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    width: 4px;
+    height: 4px;
+    background: #000;
+    border-radius: 50%;
+    box-shadow: 24px 0 0 #000;
+}
+
+/* Matilda's angry eyebrows */
+.character-avatar.matilda .eye::after {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: -1px;
+    width: 12px;
+    height: 3px;
+    background: #D2691E;
+    border-radius: 2px;
+    transform: rotate(-20deg);
+    box-shadow: 26px 2px 0 #D2691E;
+}
+
+/* Matilda's beak in avatar */
+.character-avatar.matilda .beak {
+    position: absolute;
+    bottom: 22px;
     left: 50%;
     transform: translateX(-50%);
     width: 0;
     height: 0;
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
-    border-bottom: 12px solid #D2691E;
+    border-top: 10px solid #FFD700;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+    z-index: 3;
 }
 
 .character-avatar.stella {
-    background: linear-gradient(135deg, #FF1493, #DC143C);
+    background: linear-gradient(135deg, #FF1493, #DC143C, #C71585);
+    position: relative;
+    box-shadow: 0 0 0 8px rgba(255, 20, 147, 0.3), 0 8px 25px rgba(199, 21, 133, 0.4);
 }
 
 .character-avatar.stella::before {
-    /* Light coral belly */
+    /* Enhanced coral-pink belly with subtle shading */
     content: '';
     position: absolute;
-    bottom: 15px;
+    bottom: 12px;
     left: 50%;
     transform: translateX(-50%);
-    width: 50px;
-    height: 35px;
-    background: #FFCCCB;
+    width: 60px;
+    height: 40px;
+    background: linear-gradient(135deg, #FFE4E1, #FFCCCB, #FFB6C1);
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+.character-avatar.stella::after {
+    /* Enhanced pink crest feathers */
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-bottom: 16px solid #C71585;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    z-index: 2;
+}
+
+/* Stella's eyes in avatar */
+.character-avatar.stella .eye {
+    position: absolute;
+    top: 35px;
+    left: 30px;
+    width: 12px;
+    height: 12px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    border: 3px solid #2F1B14;
+    box-shadow: 24px 0 0 #FFFFFF, 24px 0 0 3px #2F1B14;
+    z-index: 3;
+}
+
+/* Stella's pupils */
+.character-avatar.stella .eye::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    width: 4px;
+    height: 4px;
+    background: #000;
+    border-radius: 50%;
+    box-shadow: 24px 0 0 #000;
+}
+
+/* Stella's determined eyebrows */
+.character-avatar.stella .eye::after {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: -1px;
+    width: 12px;
+    height: 3px;
+    background: #8B008B;
+    border-radius: 2px;
+    transform: rotate(-25deg);
+    box-shadow: 26px 2px 0 #8B008B;
+}
+
+/* Stella's beak in avatar */
+.character-avatar.stella .beak {
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 10px solid #FFA500;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+    z-index: 3;
+}
+
+/* Stella's bubble effect in avatar */
+.character-avatar.stella .bubble {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 25px;
+    height: 25px;
+    background: radial-gradient(circle, rgba(255, 228, 225, 0.8) 60%, rgba(255, 182, 193, 0.6) 100%);
+    border-radius: 50%;
+    opacity: 0.7;
+    box-shadow: 0 0 15px 6px rgba(255, 228, 225, 0.4);
+    animation: stellaBubbleFloat 3s ease-in-out infinite;
+    z-index: 1;
 }
 
 .character-avatar.bubbles {
@@ -774,11 +936,13 @@
 }
 
 .bird-visual-matilda {
-    background: linear-gradient(135deg, #F8F8FF, #DCDCDC);
+    background: linear-gradient(135deg, #FFFFFF, #F5F5F5, #E8E8E8);
+    position: relative;
 }
 
 .bird-visual-stella {
-    background: linear-gradient(135deg, #FF1493, #DC143C);
+    background: linear-gradient(135deg, #FF1493, #DC143C, #C71585);
+    position: relative;
 }
 
 .bird-visual-red::before {
@@ -828,31 +992,190 @@
 
 
 .bird-visual-matilda::before {
-    /* Snow white belly */
+    /* Enhanced white belly with subtle shading */
     content: '';
     position: absolute;
     bottom: 8px;
     left: 50%;
     transform: translateX(-50%);
-    width: 35px;
-    height: 25px;
-    background: #FFFAFA;
+    width: 40px;
+    height: 28px;
+    background: linear-gradient(135deg, #FFFFFF, #F8F8F8, #F0F0F0);
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Matilda's eyes for bird visual */
+.bird-visual-matilda .eye {
+    position: absolute;
+    top: 22px;
+    left: 20px;
+    width: 8px;
+    height: 8px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    border: 2px solid #2F1B14;
+    box-shadow: 16px 0 0 #FFFFFF, 16px 0 0 2px #2F1B14;
+    z-index: 3;
+}
+
+/* Matilda's pupils for bird visual */
+.bird-visual-matilda .eye::before {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 2px;
+    width: 3px;
+    height: 3px;
+    background: #000;
+    border-radius: 50%;
+    box-shadow: 16px 0 0 #000;
+}
+
+/* Matilda's angry eyebrows for bird visual */
+.bird-visual-matilda .eye::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -1px;
+    width: 8px;
+    height: 2px;
+    background: #D2691E;
+    border-radius: 1px;
+    transform: rotate(-20deg);
+    box-shadow: 18px 1px 0 #D2691E;
+}
+
+/* Matilda's crest feathers for bird visual */
+.bird-visual-matilda::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 12px solid #D2691E;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+    z-index: 2;
+}
+
+/* Matilda's beak for bird visual */
+.bird-visual-matilda .beak {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid #FFD700;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+    z-index: 3;
 }
 
 .bird-visual-stella::before {
-    /* Light coral belly */
+    /* Enhanced coral-pink belly with subtle shading */
     content: '';
     position: absolute;
     bottom: 8px;
     left: 50%;
     transform: translateX(-50%);
-    width: 35px;
-    height: 25px;
-    background: #FFCCCB;
+    width: 40px;
+    height: 28px;
+    background: linear-gradient(135deg, #FFE4E1, #FFCCCB, #FFB6C1);
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Stella's eyes for bird visual */
+.bird-visual-stella .eye {
+    position: absolute;
+    top: 22px;
+    left: 20px;
+    width: 8px;
+    height: 8px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    border: 2px solid #2F1B14;
+    box-shadow: 16px 0 0 #FFFFFF, 16px 0 0 2px #2F1B14;
+    z-index: 3;
+}
+
+/* Stella's pupils for bird visual */
+.bird-visual-stella .eye::before {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 2px;
+    width: 3px;
+    height: 3px;
+    background: #000;
+    border-radius: 50%;
+    box-shadow: 16px 0 0 #000;
+}
+
+/* Stella's determined eyebrows for bird visual */
+.bird-visual-stella .eye::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -1px;
+    width: 8px;
+    height: 2px;
+    background: #8B008B;
+    border-radius: 1px;
+    transform: rotate(-25deg);
+    box-shadow: 18px 1px 0 #8B008B;
+}
+
+/* Stella's crest feathers for bird visual */
+.bird-visual-stella::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 12px solid #C71585;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+    z-index: 2;
+}
+
+/* Stella's beak for bird visual */
+.bird-visual-stella .beak {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid #FFA500;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+    z-index: 3;
+}
+
+/* Stella's bubble effect for bird visual */
+.bird-visual-stella .bubble {
+    position: absolute;
+    top: 10px;
+    right: 8px;
+    width: 12px;
+    height: 12px;
+    background: radial-gradient(circle, rgba(255, 228, 225, 0.8) 60%, rgba(255, 182, 193, 0.6) 100%);
+    border-radius: 50%;
+    opacity: 0.7;
+    box-shadow: 0 0 8px 3px rgba(255, 228, 225, 0.4);
+    animation: stellaBubbleFloat 3s ease-in-out infinite;
+    z-index: 1;
 }
 
 .bird-visual-red::after {
@@ -1029,32 +1352,37 @@
 }
 
 .bird-visual-matilda {
-    background: linear-gradient(135deg, #FFFFFF, #E0E0E0);
+    background: linear-gradient(135deg, #FFFFFF, #F5F5F5, #E8E8E8);
+    position: relative;
 }
 
 .bird-visual-matilda::before {
+    /* Enhanced white eyes with proper styling */
     content: '';
     position: absolute;
-    top: 25px;
-    left: 30px;
+    top: 22px;
+    left: 26px;
     width: 8px;
     height: 8px;
-    background: #333;
+    background: #FFFFFF;
     border-radius: 50%;
-    box-shadow: 14px 0 0 #333;
+    border: 2px solid #2F1B14;
+    box-shadow: 16px 0 0 #FFFFFF, 16px 0 0 2px #2F1B14;
 }
 
 .bird-visual-matilda::after {
+    /* Enhanced brown/orange crest feathers */
     content: '';
     position: absolute;
-    top: 10px;
+    top: 8px;
     left: 50%;
     transform: translateX(-50%);
     width: 0;
     height: 0;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
-    border-bottom: 16px solid #8B4513;
+    border-bottom: 14px solid #D2691E;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
 }
 
 /* Character Info */
